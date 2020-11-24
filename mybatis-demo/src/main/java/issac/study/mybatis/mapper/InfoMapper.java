@@ -1,11 +1,12 @@
 package issac.study.mybatis.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import issac.study.mybatis.domain.Info;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface InfoMapper {
+public interface InfoMapper extends BaseMapper<Info> {
     int deleteByPrimaryKey(Integer id);
 
     int insert(Info record);

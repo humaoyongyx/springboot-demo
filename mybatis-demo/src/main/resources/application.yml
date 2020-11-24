@@ -7,4 +7,9 @@ spring:
 mybatis:
   type-aliases-package: issac.study.mybatis.domain
   mapper-locations: classpath:mybatis/mapper/*.xml
+mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: issac.study.mybatis.domain
+  mapper-locations: classpath:mybatis/mapper/*.xml
   config-location: classpath:mybatis-config.xml
