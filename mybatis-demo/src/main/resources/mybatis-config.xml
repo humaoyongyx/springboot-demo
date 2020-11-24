@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
+    </settings>
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <!-- 这样设置之后，拦截器为拦截此参数，这样就可以在Mapper中此分页参数。然后插件会自动注入分页参数 -->
+            <property name="supportMethodsArguments" value="true"/>
+            <property name="params" value="pageNum=pageNum;pageSize=pageSize;"/>
+        </plugin>
+    </plugins>
+
+</configuration>

@@ -22,14 +22,19 @@ public class TestController {
 
     }
 
-    @GetMapping("/id2")
+    @GetMapping("/id")
     public Object test(Integer id) {
         return testService.test(id);
     }
 
 
-    @GetMapping("/2")
+    @GetMapping("/save")
     public void test2() {
         testService.test2();
+    }
+
+    @GetMapping("/page")
+    public Object testPage(Integer pageNum, Integer pageSize) {
+        return testService.page(pageNum, pageSize);
     }
 }

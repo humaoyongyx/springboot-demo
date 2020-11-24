@@ -5,6 +5,7 @@ import issac.study.mybatis.mapper.InfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -21,12 +22,12 @@ public class TestService {
         return info;
     }
 
+    public Object page(Integer pageNum,Integer pageSize) {
+        List<Info> infos = infoMapper.selectPage(pageNum, pageSize);
+        return infos;
+    }
+
     public Object test(Integer id) {
-        if (true) {
-            Info info = new Info();
-            info.setName("xx测试你好");
-            return info;
-        }
         Info info = infoMapper.selectByPrimaryKey(id);
         return info;
     }
