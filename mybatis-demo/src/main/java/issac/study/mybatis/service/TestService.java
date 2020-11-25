@@ -5,12 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import issac.study.mybatis.domain.Info;
 import issac.study.mybatis.mapper.InfoMapper;
+import issac.study.mybatis.utils.ConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,21 +51,7 @@ public class TestService {
     }
 
     public Object pagePlus(Pageable pageable) {
-        Page<Info> page = new Page<>(pageable.getPageNumber(), pageable.getPageSize());
-        Sort sort = pageable.getSort();
-        List<OrderItem> orderItemList = new ArrayList<>();
-        for (Sort.Order order : sort) {
-            OrderItem orderItem;
-            if (order.isAscending()) {
-                orderItem = OrderItem.asc(order.getProperty());
-            } else {
-                orderItem = OrderItem.desc(order.getProperty());
-            }
-            orderItemList.add(orderItem);
-        }
-        if (!orderItemList.isEmpty()) {
-            page.setOrders(orderItemList);
-        }
+        Page<Info> page = ConvertUtils.pageableToPage(pageable);
         Page<Info> infoPage = infoMapper.selectPage(page, new QueryWrapper<>());
         return infoPage;
     }

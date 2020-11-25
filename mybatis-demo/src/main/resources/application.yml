@@ -4,12 +4,12 @@ spring:
     username: root
     password: root
     url: jdbc:mysql://192.168.99.3:3306/test?useUnicode=true&characterEncoding=utf-8
-mybatis:
-  type-aliases-package: issac.study.mybatis.domain
-  mapper-locations: classpath:mybatis/mapper/*.xml
+#mybatis:
+#  type-aliases-package: issac.study.mybatis.domain
+#  mapper-locations: classpath:mybatis/mapper/*.xml
 mybatis-plus:
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  type-aliases-package: issac.study.mybatis.domain
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql日志
+  type-aliases-package: issac.study.mybatis.domain #扫描表映射的类，默认是自动加下划线
   mapper-locations: classpath:mybatis/mapper/*.xml
-  config-location: classpath:mybatis-config.xml
+#  config-location: classpath:mybatis-config.xml
