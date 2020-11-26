@@ -27,6 +27,7 @@
 
     <modules>
         <module>mybatis-demo</module>
+        <module>mybatis-jpa-demo</module>
     </modules>
 
     <build>

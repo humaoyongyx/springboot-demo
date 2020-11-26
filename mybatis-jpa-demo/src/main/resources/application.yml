@@ -1,0 +1,29 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql://192.168.99.3:3306/test?useUnicode=true&characterEncoding=utf-8
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy #命名规范转下划线
+    database: mysql
+    show-sql: true #显示sql
+    properties:
+      hibernate.format_sql: true #格式化sql输出
+mybatis:
+  type-aliases-package: issac.study.mybatisjpa.domain
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  config-location: classpath:mybatis-config.xml
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: trace #显示hibernate的sql
