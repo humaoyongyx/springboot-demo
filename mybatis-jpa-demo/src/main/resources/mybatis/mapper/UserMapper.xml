@@ -19,11 +19,6 @@
     </resultMap>
 
 
-    <sql id="userExtraSelectCountSql">
-     SELECT
-        COUNT(*)
-    </sql>
-
     <sql id="userExtraSelectSql">
      SELECT
         u.*,
@@ -49,22 +44,14 @@
         </if>
     </sql>
 
-    <sql id="userExtraOrderLimitSql">
-        ORDER BY
-        <foreach collection="sorts" separator="," item="sort">
-            ${sort}
-        </foreach>
-        LIMIT #{offset},#{size}
-    </sql>
-
     <select id="selectPage" resultMap="userExtraModel">
         <include refid="userExtraSelectSql"/>
         <include refid="userExtraFromSql"/>
-        <include refid="userExtraOrderLimitSql"/>
+        <include refid="page.orderLimitSql"/>
     </select>
 
     <select id="selectPageTotal" resultType="java.lang.Long">
-        <include refid="userExtraSelectCountSql"/>
+        <include refid="page.selectCountSql"/>
         <include refid="userExtraFromSql"/>
     </select>
 

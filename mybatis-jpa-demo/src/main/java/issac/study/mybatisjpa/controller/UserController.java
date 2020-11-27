@@ -1,9 +1,11 @@
 package issac.study.mybatisjpa.controller;
 
+import issac.study.mybatisjpa.core.page.PageParam;
 import issac.study.mybatisjpa.domain.UserExtraModel;
 import issac.study.mybatisjpa.mapper.UserMapper;
 import issac.study.mybatisjpa.req.UserReq;
 import issac.study.mybatisjpa.service.UserServiceImpl;
+import issac.study.mybatisjpa.utils.ConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,16 +56,8 @@ public class UserController {
      */
     @GetMapping("/extraPage")
     public Object extraPage(UserReq userReq, @PageableDefault(page = 0, size = 50, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Sort sort = pageable.getSort();
-        List<String> sorts = new ArrayList<>();
-        for (Sort.Order order : sort) {
-            if (order.isAscending()) {
-                sorts.add(order.getProperty() + " ASC ");
-            } else {
-                sorts.add(order.getProperty() + " DESC ");
-            }
-        }
-        List<UserExtraModel> userExtraModels = userMapper.selectPage(userReq, pageable.getOffset(), pageable.getPageSize(), sorts);
+        PageParam pageParam = ConvertUtils.pageableToPageParam(pageable);
+        List<UserExtraModel> userExtraModels = userMapper.selectPage(userReq, pageParam);
         long total = userMapper.selectPageTotal(userReq);
         return new PageImpl<>(userExtraModels, pageable, total);
     }

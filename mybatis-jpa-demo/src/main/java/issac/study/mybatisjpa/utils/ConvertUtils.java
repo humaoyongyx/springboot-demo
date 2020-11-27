@@ -5,7 +5,11 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import issac.study.mybatisjpa.core.page.PageParam;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,5 +88,28 @@ public class ConvertUtils {
         } else {
             return JSON.toJSONString(object);
         }
+    }
+
+    /**
+     * 参数转换
+     *
+     * @param pageable
+     * @return
+     */
+    public static PageParam pageableToPageParam(Pageable pageable) {
+        Sort sort = pageable.getSort();
+        List<String> sorts = new ArrayList<>();
+        for (Sort.Order order : sort) {
+            if (order.isAscending()) {
+                sorts.add(order.getProperty() + " ASC ");
+            } else {
+                sorts.add(order.getProperty() + " DESC ");
+            }
+        }
+        PageParam pageParam = new PageParam();
+        pageParam.setOffset(pageable.getOffset());
+        pageParam.setSize(pageable.getPageSize());
+        pageParam.setSorts(sorts);
+        return pageParam;
     }
 }
