@@ -34,13 +34,6 @@ public class InfoTestVo extends BaseVo {
         this.descp = descp;
     }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
 
     public String getCreateTimeFmt() {
         if (this.createTime != null) {

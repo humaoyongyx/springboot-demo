@@ -1,5 +1,7 @@
 package issac.study.mybatisjpa.req;
 
+import issac.study.mybatisjpa.core.jpa.annotation.TimeBegin;
+import issac.study.mybatisjpa.core.jpa.annotation.TimeEnd;
 import issac.study.mybatisjpa.req.base.BaseReq;
 import lombok.Data;
 
@@ -16,4 +18,9 @@ public class InfoReq extends BaseReq {
 
     private String descp;
 
+    @TimeBegin("createTime")
+    private String createTimeBegin;
+
+    @TimeEnd("createTime")
+    private String createTimeEnd;
 }

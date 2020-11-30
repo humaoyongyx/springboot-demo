@@ -4,11 +4,13 @@ import issac.study.mybatisjpa.core.jpa.JpaQuerySpecification;
 import issac.study.mybatisjpa.model.UserEntity;
 import issac.study.mybatisjpa.repository.UserRepository;
 import issac.study.mybatisjpa.req.UserReq;
+import issac.study.mybatisjpa.service.InfoService;
 import issac.study.mybatisjpa.utils.ConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -21,10 +23,25 @@ public class UserServiceImpl {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    InfoService infoService;
+
+    /**
+     * 带有事务的处理
+     *
+     * @return
+     */
+    @Transactional
     public Object save() {
         UserEntity userEntity = new UserEntity();
-        userEntity.setName(UUID.randomUUID().toString());
-        return userRepository.save(userEntity);
+        String name = UUID.randomUUID().toString();
+        userEntity.setName(name);
+        UserEntity save = userRepository.save(userEntity);
+//        InfoEntity entity = new InfoEntity();
+//        entity.setName(name);
+//        infoService.baseJpaRepository().save(entity);
+//        int i = 1 / 0;
+        return save;
     }
 
     public Object update(UserReq userReq) {

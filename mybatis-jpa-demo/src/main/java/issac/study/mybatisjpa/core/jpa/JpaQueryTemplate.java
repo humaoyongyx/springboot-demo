@@ -1,5 +1,8 @@
 package issac.study.mybatisjpa.core.jpa;
 
+import issac.study.mybatisjpa.core.jpa.annotation.SyncDateTime;
+import issac.study.mybatisjpa.core.jpa.annotation.TimeBegin;
+import issac.study.mybatisjpa.core.jpa.annotation.TimeEnd;
 import issac.study.mybatisjpa.utils.ConvertUtils;
 import issac.study.mybatisjpa.utils.DateUtils;
 import issac.study.mybatisjpa.utils.ReflectionUtils;
@@ -291,6 +294,14 @@ public class JpaQueryTemplate {
                 if (syncDateTime != null) {
                     fieldName = syncDateTime.value();
                 }
+                TimeBegin timeBegin = field.getAnnotation(TimeBegin.class);
+                if (timeBegin != null) {
+                    fieldName = timeBegin.value();
+                }
+                TimeEnd timeEnd = field.getAnnotation(TimeEnd.class);
+                if (timeEnd != null) {
+                    fieldName = timeEnd.value();
+                }
                 if (entityFieldMap.get(fieldName) == null) {
                     continue;
                 }
@@ -304,6 +315,20 @@ public class JpaQueryTemplate {
                                 String syncDateTimeField = syncDateTime.value();
                                 if (StringUtils.isNotBlank(syncDateTimeField)) {
                                     andGe(syncDateTimeField, DateUtils.fmt(value + ""));
+                                }
+                                continue;
+                            }
+                            if (timeBegin != null) {
+                                String timeBeginField = timeBegin.value();
+                                if (StringUtils.isNoneBlank(timeBeginField)) {
+                                    andGe(timeBeginField, DateUtils.fmt(value + ""));
+                                }
+                                continue;
+                            }
+                            if (timeEnd != null) {
+                                String timeEndField = timeEnd.value();
+                                if (StringUtils.isNoneBlank(timeEndField)) {
+                                    andLe(timeEndField, DateUtils.fmt(value + ""));
                                 }
                                 continue;
                             }
@@ -327,7 +352,7 @@ public class JpaQueryTemplate {
          * @param joinName
          * @param req
          * @param eClass
-         * @param jClass
+         * @param jClass   join的类
          * @return
          */
         public Query<E> and(String joinName, Object req, Class<E> eClass, Class<?> jClass) {

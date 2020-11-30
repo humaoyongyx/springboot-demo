@@ -1,4 +1,4 @@
-package issac.study.mybatisjpa.core.jpa;
+package issac.study.mybatisjpa.core.jpa.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
