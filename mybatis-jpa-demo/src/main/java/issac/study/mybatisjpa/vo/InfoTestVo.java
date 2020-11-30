@@ -1,14 +1,14 @@
 package issac.study.mybatisjpa.vo;
 
+import issac.study.mybatisjpa.vo.base.BaseVo;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * @author issac.hu
  */
-public class InfoTestVo {
-
-    private Integer id;
+public class InfoTestVo extends BaseVo {
 
     private String name;
 
@@ -17,14 +17,6 @@ public class InfoTestVo {
     private Date createTime;
 
     private String createTimeFmt;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

@@ -33,7 +33,11 @@ public class ConvertUtils {
      * @return
      */
     public static <V> Optional<V> toOpVo(Object entity, Class<V> vClass) {
-        return Optional.of(convertObject(entity, vClass));
+        V value = convertObject(entity, vClass);
+        if (value == null) {
+            return Optional.empty();
+        }
+        return Optional.of(value);
     }
 
     /**
@@ -45,9 +49,28 @@ public class ConvertUtils {
      * @return
      */
     public static <T> T convertObject(Object object, Class<T> tClass) {
+        if (object == null) {
+            return null;
+        }
         return JSON.parseObject(toJsonString(object), tClass);
     }
 
+    /**
+     * 转换option对象
+     *
+     * @param object
+     * @param tClass
+     * @param <T>
+     * @return
+     */
+    public static <T> T convertOptionObject(Object object, Class<T> tClass) {
+        if (object != null && object instanceof Optional) {
+            if (((Optional<?>) object).isPresent()) {
+                return JSON.parseObject(toJsonString(((Optional<?>) object).get()), tClass);
+            }
+        }
+        return null;
+    }
 
     /**
      * 通用转换
@@ -69,6 +92,16 @@ public class ConvertUtils {
      */
     public static void copyNotNullProperties(Object source, Object target) {
         BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+    }
+
+    /**
+     * copy属性，包括null
+     *
+     * @param source
+     * @param target
+     */
+    public static void copyWithNullProperties(Object source, Object target) {
+        BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreError(true));
     }
 
     private static String toJsonString(Object object) {

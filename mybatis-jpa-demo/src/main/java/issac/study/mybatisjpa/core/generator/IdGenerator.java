@@ -1,4 +1,4 @@
-package issac.study.mybatisjpa.core;
+package issac.study.mybatisjpa.core.generator;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;

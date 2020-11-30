@@ -24,7 +24,7 @@ public class BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "IdGenerator")
     @GenericGenerator(
             name = "IdGenerator",
-            strategy = "issac.study.mybatisjpa.core.IdGenerator"
+            strategy = "issac.study.mybatisjpa.core.generator.IdGenerator"
     )
     private Integer id;
 

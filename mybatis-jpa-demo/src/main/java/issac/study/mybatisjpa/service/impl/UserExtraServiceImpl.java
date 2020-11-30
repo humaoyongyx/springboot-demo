@@ -1,4 +1,4 @@
-package issac.study.mybatisjpa.service;
+package issac.study.mybatisjpa.service.impl;
 
 import issac.study.mybatisjpa.repository.UserExtraRepository;
 import org.springframework.beans.factory.annotation.Autowired;

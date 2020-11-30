@@ -1,4 +1,4 @@
-package issac.study.mybatisjpa.service;
+package issac.study.mybatisjpa.service.impl;
 
 import issac.study.mybatisjpa.core.jpa.JpaQuerySpecification;
 import issac.study.mybatisjpa.model.UserEntity;

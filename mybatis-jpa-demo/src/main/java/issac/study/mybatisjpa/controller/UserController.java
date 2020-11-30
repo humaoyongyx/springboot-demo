@@ -4,7 +4,7 @@ import issac.study.mybatisjpa.core.page.PageParam;
 import issac.study.mybatisjpa.domain.UserExtraModel;
 import issac.study.mybatisjpa.mapper.UserMapper;
 import issac.study.mybatisjpa.req.UserReq;
-import issac.study.mybatisjpa.service.UserServiceImpl;
+import issac.study.mybatisjpa.service.impl.UserServiceImpl;
 import issac.study.mybatisjpa.utils.ConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
