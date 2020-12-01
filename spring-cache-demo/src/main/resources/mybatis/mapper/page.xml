@@ -1,0 +1,21 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="page">
+    <sql id="orderLimitSql">
+        <if test="page.sorts!= null and !page.sorts.isEmpty()">
+            ORDER BY
+            <foreach collection="page.sorts" separator="," item="sort">
+                ${sort}
+            </foreach>
+        </if>
+
+        LIMIT #{page.offset},#{page.size}
+    </sql>
+
+    <sql id="selectCountSql">
+     SELECT
+        COUNT(*)
+    </sql>
+
+</mapper>
