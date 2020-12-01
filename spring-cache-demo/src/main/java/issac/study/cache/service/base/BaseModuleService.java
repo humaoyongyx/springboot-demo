@@ -39,7 +39,7 @@ public class BaseModuleService {
 
     public ResponseVo getById(String moduleId, Integer id) {
         BaseModule module = getModule(moduleId);
-        return ResponseVo.success(module.getBaseCrudService().findById(id, module.getVoClass()));
+        return ResponseVo.success(module.getBaseCrudService().getById(id, module.getVoClass()));
     }
 
     public ResponseVo page(String moduleId, Pageable pageable, Map<String, Object> param) {

@@ -27,4 +27,6 @@ public class UserInfoServiceImpl extends AbstractBaseCrudServiceImpl implements 
     public BaseJpaRepository baseJpaRepository() {
         return userInfoRepository;
     }
+
+
 }

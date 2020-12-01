@@ -9,6 +9,9 @@ import issac.study.cache.utils.ConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +44,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
      * @param <V>
      * @return
      */
+    @CachePut(value = "cacheDemo", key = "targetClass+''+#result.id")
     @Override
     public <V> V save(BaseReq baseReq, Class<V> vClass) {
         Objects.requireNonNull(baseReq, "保存的对象不能为空");
@@ -56,6 +60,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
      *
      * @param id
      */
+    @CacheEvict(value = "cacheDemo", key = "targetClass+''+#id")
     @Override
     public void deleteById(Object id) {
         try {
@@ -87,6 +92,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
      * @param <V>
      * @return
      */
+    @CachePut(value = "cacheDemo", key = "targetClass+''+#p0.id")
     @Override
     public <V> V update(BaseReq baseReq, Class<V> vClass, boolean includeNullValue) {
         Objects.requireNonNull(baseReq, "更新的对象不能为空");
@@ -129,6 +135,8 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
      * @param <V>
      * @return
      */
+
+    @Cacheable(value = "cacheDemo", key = "targetClass+''+#id")
     @Override
     public <V> V getById(Object id, Class<V> vClass) {
         Optional byId = baseJpaRepository().findById(id);

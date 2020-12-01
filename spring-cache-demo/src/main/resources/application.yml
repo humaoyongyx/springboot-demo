@@ -15,6 +15,16 @@ spring:
     show-sql: true #显示sql
     properties:
       hibernate.format_sql: true #格式化sql输出
+  cache:
+    type: redis
+  redis:
+    host: 192.168.99.3
+    port: 6379
+    timeout: 10000
+    maxIdle: 200
+    maxTotal: 500
+    maxWaitMillis: 1000
+    testOnBorrow: true
 mybatis:
   type-aliases-package: issac.study.mybatisjpa.domain
   mapper-locations: classpath:mybatis/mapper/*.xml
