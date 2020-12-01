@@ -320,14 +320,14 @@ public class JpaQueryTemplate {
                             }
                             if (timeBegin != null) {
                                 String timeBeginField = timeBegin.value();
-                                if (StringUtils.isNoneBlank(timeBeginField)) {
+                                if (StringUtils.isNotBlank(timeBeginField)) {
                                     andGe(timeBeginField, DateUtils.fmt(value + ""));
                                 }
                                 continue;
                             }
                             if (timeEnd != null) {
                                 String timeEndField = timeEnd.value();
-                                if (StringUtils.isNoneBlank(timeEndField)) {
+                                if (StringUtils.isNotBlank(timeEndField)) {
                                     andLe(timeEndField, DateUtils.fmt(value + ""));
                                 }
                                 continue;
