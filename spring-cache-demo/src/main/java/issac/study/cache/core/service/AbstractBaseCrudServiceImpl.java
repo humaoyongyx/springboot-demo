@@ -25,6 +25,7 @@ import java.util.Set;
 
 
 /**
+ * 参考 https://www.cnblogs.com/mzq123/p/12629142.html
  * @author issac.hu
  */
 public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
