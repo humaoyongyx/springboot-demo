@@ -2,6 +2,7 @@ package issac.study.cache.service.base;
 
 import issac.study.cache.core.service.BaseCrudService;
 import issac.study.cache.exception.BusinessRuntimeException;
+import issac.study.cache.exception.Error404RuntimeException;
 import issac.study.cache.req.base.BaseReq;
 import issac.study.cache.service.register.BaseModuleRegister;
 import issac.study.cache.utils.ConvertUtils;
@@ -34,7 +35,11 @@ public class BaseModuleService {
     }
 
     public BaseModule getModule(String moduleId) {
-        return moduleMap.get(moduleId);
+        BaseModule baseModule = moduleMap.get(moduleId);
+        if (baseModule == null) {
+            throw new Error404RuntimeException();
+        }
+        return baseModule;
     }
 
     public ResponseVo getById(String moduleId, Integer id) {

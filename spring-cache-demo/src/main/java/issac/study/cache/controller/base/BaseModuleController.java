@@ -1,5 +1,7 @@
 package issac.study.cache.controller.base;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import issac.study.cache.service.base.BaseModuleService;
 import issac.study.cache.vo.response.ResponseVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,9 @@ import java.util.Map;
  * 模板控制器类
  * moduleId 为具体请求类的名称：如equipment
  */
+@Api("通用增删改查接口")
 @RestController
-@RequestMapping("/{moduleId}/")
+@RequestMapping("/api/{moduleId}/")
 public class BaseModuleController {
 
     @Autowired
@@ -29,6 +32,7 @@ public class BaseModuleController {
      * @param id
      * @return
      */
+    @ApiOperation("通过id查询接口")
     @GetMapping(value = "/{id}")
     public ResponseVo getById(@PathVariable("moduleId") String moduleId, @PathVariable("id") Integer id) {
         return baseModuleService.getById(moduleId, id);

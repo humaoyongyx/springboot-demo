@@ -25,7 +25,6 @@ import java.time.Duration;
 @EnableCaching
 public class CacheConfig {
 
-
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         RedisSerializer<String> redisSerializer = new StringRedisSerializer();

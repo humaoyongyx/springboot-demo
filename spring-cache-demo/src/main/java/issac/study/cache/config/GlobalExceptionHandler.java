@@ -1,6 +1,7 @@
 package issac.study.cache.config;
 
 import issac.study.cache.exception.BusinessRuntimeException;
+import issac.study.cache.exception.Error404RuntimeException;
 import issac.study.cache.vo.response.ResponseVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,12 @@ public class GlobalExceptionHandler {
     public ResponseVo BusinessRuntimeExceptionHandler(BusinessRuntimeException e) {
         LOGGER.error("global BusinessRuntimeException:", e);
         return ResponseVo.fail(e.getErrorCode(), e.getMsg());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(Error404RuntimeException.class)
+    public ResponseVo Error404RuntimeException(Error404RuntimeException e) {
+        return ResponseVo.fail(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
     }
 
 }
