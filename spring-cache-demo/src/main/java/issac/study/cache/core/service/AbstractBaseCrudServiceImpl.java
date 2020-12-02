@@ -34,7 +34,12 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
     @Autowired
     Validator validator;
 
-    public abstract Class<? extends BaseEntity> entityClass();
+    protected abstract Class<? extends BaseEntity> entityClass();
+
+    @Override
+    public boolean cacheable() {
+        return false;
+    }
 
     /**
      * 保存
@@ -44,7 +49,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
      * @param <V>
      * @return
      */
-    @CachePut(value = "cacheDemo", key = "targetClass+''+#result.id")
+    @CachePut(value = "cacheDemo", key = "targetClass+''+#result.id", condition = "target.cacheable()")
     @Override
     public <V> V save(BaseReq baseReq, Class<V> vClass) {
         Objects.requireNonNull(baseReq, "保存的对象不能为空");
@@ -60,7 +65,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
      *
      * @param id
      */
-    @CacheEvict(value = "cacheDemo", key = "targetClass+''+#id")
+    @CacheEvict(value = "cacheDemo", key = "targetClass+''+#id", condition = "target.cacheable()")
     @Override
     public void deleteById(Object id) {
         try {
@@ -92,7 +97,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
      * @param <V>
      * @return
      */
-    @CachePut(value = "cacheDemo", key = "targetClass+''+#p0.id")
+    @CachePut(value = "cacheDemo", key = "targetClass+''+#p0.id", condition = "target.cacheable()")
     @Override
     public <V> V update(BaseReq baseReq, Class<V> vClass, boolean includeNullValue) {
         Objects.requireNonNull(baseReq, "更新的对象不能为空");
@@ -136,7 +141,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
      * @return
      */
 
-    @Cacheable(value = "cacheDemo", key = "targetClass+''+#id")
+    @Cacheable(value = "cacheDemo", key = "targetClass+''+#id", condition = "target.cacheable()")
     @Override
     public <V> V getById(Object id, Class<V> vClass) {
         Optional byId = baseJpaRepository().findById(id);

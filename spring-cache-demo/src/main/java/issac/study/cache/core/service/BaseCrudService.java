@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * @author issac.hu
  */
-public interface BaseCrudService {
+public interface BaseCrudService extends CacheableService {
 
     /**
      * 获取repository

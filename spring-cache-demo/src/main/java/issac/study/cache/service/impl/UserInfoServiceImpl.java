@@ -28,5 +28,4 @@ public class UserInfoServiceImpl extends AbstractBaseCrudServiceImpl implements 
         return userInfoRepository;
     }
 
-
 }

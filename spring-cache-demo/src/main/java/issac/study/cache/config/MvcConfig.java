@@ -10,10 +10,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * <p>Title: MvcConfig</p>
- * 全局拦截器
+ * MvcConfig
  *
- * @author Xuly
+ * @author issac.hu
  */
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
