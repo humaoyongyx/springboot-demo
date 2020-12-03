@@ -29,8 +29,8 @@ public class BaseEntity implements Serializable {
     private Integer id;
 
     @Version
-    @Column(columnDefinition = "BIGINT ( 20 ) DEFAULT '0' COMMENT '乐观锁' ")
-    private Long lockVersion;
+    @Column(columnDefinition = "int DEFAULT '0' COMMENT '乐观锁' ")
+    private Integer lockVersion;
 
     @CreatedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

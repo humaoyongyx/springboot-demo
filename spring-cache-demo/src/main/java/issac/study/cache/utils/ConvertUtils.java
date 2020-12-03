@@ -4,14 +4,13 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import issac.study.cache.core.page.PageParam;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author issac.hu
@@ -53,6 +52,20 @@ public class ConvertUtils {
             return null;
         }
         return JSON.parseObject(toJsonString(object), tClass);
+    }
+
+    /**
+     * 将普通bean转为map
+     *
+     * @param bean
+     * @return
+     */
+    public static Map<String, Object> toMap(Object bean) {
+        if (bean == null) {
+            return new HashMap<>();
+        }
+        JSONObject jsonObject = JSON.parseObject(toJsonString(bean));
+        return jsonObject.getInnerMap();
     }
 
     /**
@@ -104,8 +117,19 @@ public class ConvertUtils {
         BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreError(true));
     }
 
-    private static String toJsonString(Object object) {
-        return toJsonString(object, true);
+    public static String toJsonString(Object object) {
+        return toJsonString(object, false);
+    }
+
+    /**
+     * 转换为json字符串
+     *
+     * @param object
+     * @param format 是否格式化
+     * @return
+     */
+    public static String toJsonString(Object object, boolean format) {
+        return toJsonString(object, true, format);
     }
 
     /**
@@ -113,13 +137,21 @@ public class ConvertUtils {
      *
      * @param object
      * @param disableCircularReference 是否开启循环引用
+     * @param format                   是否格式化
      * @return
      */
-    private static String toJsonString(Object object, boolean disableCircularReference) {
+    public static String toJsonString(Object object, boolean disableCircularReference, boolean format) {
+        List<SerializerFeature> serializerFeatureList = new ArrayList<>();
         if (disableCircularReference) {
-            return JSON.toJSONString(object, SerializerFeature.DisableCircularReferenceDetect);
-        } else {
+            serializerFeatureList.add(SerializerFeature.DisableCircularReferenceDetect);
+        }
+        if (format) {
+            serializerFeatureList.add(SerializerFeature.PrettyFormat);
+        }
+        if (serializerFeatureList.isEmpty()) {
             return JSON.toJSONString(object);
+        } else {
+            return JSON.toJSONString(object, serializerFeatureList.toArray(new SerializerFeature[]{}));
         }
     }
 

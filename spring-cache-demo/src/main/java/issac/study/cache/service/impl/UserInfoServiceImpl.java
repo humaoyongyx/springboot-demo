@@ -28,4 +28,8 @@ public class UserInfoServiceImpl extends AbstractBaseCrudServiceImpl implements 
         return userInfoRepository;
     }
 
+    @Override
+    public boolean cacheable() {
+        return true;
+    }
 }
