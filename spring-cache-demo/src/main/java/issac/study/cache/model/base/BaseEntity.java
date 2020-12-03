@@ -29,14 +29,17 @@ public class BaseEntity implements Serializable {
     private Integer id;
 
     @Version
+    @Column(columnDefinition = "BIGINT ( 20 ) DEFAULT '0' COMMENT '乐观锁' ")
     private Long lockVersion;
 
     @CreatedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(columnDefinition = "datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'")
     private LocalDateTime createTime;
 
     @LastModifiedDate
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(columnDefinition = "datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'")
     private LocalDateTime updateTime;
 
 }
