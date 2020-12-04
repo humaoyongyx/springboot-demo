@@ -22,10 +22,10 @@ import java.util.*;
  */
 public class ConvertUtils {
 
-    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private static SimpleDateFormat getSimpleDateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
     /**

@@ -55,4 +55,8 @@ public class MapParam {
         return this.map;
     }
 
+    public String toJsonString() {
+        return ConvertUtils.toJsonString(this.map);
+    }
+
 }
