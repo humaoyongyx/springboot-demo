@@ -7,15 +7,27 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import issac.study.cache.core.page.PageParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
  * @author issac.hu
  */
 public class ConvertUtils {
+
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    private static SimpleDateFormat getSimpleDateFormat() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    }
+
     /**
      * 转换pageable为page
      *
@@ -52,6 +64,21 @@ public class ConvertUtils {
             return null;
         }
         return JSON.parseObject(toJsonString(object), tClass);
+    }
+
+    /**
+     * 将json转换为list
+     *
+     * @param jsonStr
+     * @param tClass
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> convertList(String jsonStr, Class<T> tClass) {
+        if (jsonStr == null) {
+            return null;
+        }
+        return JSONArray.parseArray(jsonStr, tClass);
     }
 
     /**
@@ -117,6 +144,57 @@ public class ConvertUtils {
         BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreError(true));
     }
 
+    public static String objToString(Object value) {
+        if (value == null) {
+            return null;
+        }
+        String str;
+        if (value instanceof String) {
+            str = (String) value;
+        } else if (value instanceof Number || value instanceof Boolean) {
+            str = String.valueOf(value);
+        } else if (value instanceof Date) {
+            str = getSimpleDateFormat().format((Date) value);
+        } else if (value instanceof LocalDateTime) {
+            str = ((LocalDateTime) value).format(dateTimeFormatter);
+        } else {
+            str = ConvertUtils.toJsonString(value);
+        }
+        return str;
+    }
+
+    public static <T> T strToObject(String str, Class<T> tClass) {
+        if (StringUtils.isBlank(str)) {
+            return null;
+        }
+        if (String.class.isAssignableFrom(tClass)) {
+            return (T) str;
+        } else if (Byte.class.isAssignableFrom(tClass)) {
+            return (T) Byte.valueOf(str);
+        } else if (Short.class.isAssignableFrom(tClass)) {
+            return (T) Short.valueOf(str);
+        } else if (Integer.class.isAssignableFrom(tClass)) {
+            return (T) Integer.valueOf(str);
+        } else if (Long.class.isAssignableFrom(tClass)) {
+            return (T) Long.valueOf(str);
+        } else if (Float.class.isAssignableFrom(tClass)) {
+            return (T) Float.valueOf(str);
+        } else if (Double.class.isAssignableFrom(tClass)) {
+            return (T) Double.valueOf(str);
+        } else if (Date.class.isAssignableFrom(tClass)) {
+            try {
+                return (T) getSimpleDateFormat().parse(str);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else if (LocalDateTime.class.isAssignableFrom(tClass)) {
+            return (T) LocalDateTime.parse(str, dateTimeFormatter);
+        } else {
+            return ConvertUtils.convertObject(str, tClass);
+        }
+    }
+
     public static String toJsonString(Object object) {
         return toJsonString(object, false);
     }
@@ -177,4 +255,5 @@ public class ConvertUtils {
         pageParam.setSorts(sorts);
         return pageParam;
     }
+
 }

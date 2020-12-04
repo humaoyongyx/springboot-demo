@@ -29,7 +29,7 @@ public class RedisCrudTest extends BaseServiceTest {
     @Test
     public void testHashSet() {
         String testKey = String.format("testKey:%s", "testHash");
-        redisCurdTemplate.hset(testKey, "key1", "value1");
+        redisCurdTemplate.hSet(testKey, "key1", "value1");
     }
 
 

@@ -1,5 +1,6 @@
 package issac.study.cache.config;
 
+import issac.study.cache.core.redis.RedisCrudService;
 import issac.study.cache.core.redis.RedisCurdTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -18,5 +19,10 @@ public class GlobalConfig {
     @Bean
     public RedisCurdTemplate redisCurdTemplate(StringRedisTemplate stringRedisTemplate) {
         return new RedisCurdTemplate(stringRedisTemplate);
+    }
+
+    @Bean
+    public RedisCrudService redisCrudService(RedisCurdTemplate redisCurdTemplate) {
+        return new RedisCrudService(redisCurdTemplate);
     }
 }

@@ -13,6 +13,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class RedisCurdTemplate {
 
+    /**
+     * 其序列化方式
+     * this.setKeySerializer(RedisSerializer.string());
+     * this.setValueSerializer(RedisSerializer.string());
+     * this.setHashKeySerializer(RedisSerializer.string());
+     * this.setHashValueSerializer(RedisSerializer.string());
+     */
     private StringRedisTemplate redisTemplate;
 
     public RedisCurdTemplate(StringRedisTemplate redisTemplate) {
@@ -31,26 +38,24 @@ public class RedisCurdTemplate {
         return redisTemplate.opsForValue().get(key);
     }
 
-
     public Set<String> getKeys(final String key) {
         Set<String> keys = redisTemplate.keys(key);
         return keys;
     }
 
-    public String getset(final String key, final String value) {
+    public String getSet(final String key, final String value) {
         return redisTemplate.opsForValue().getAndSet(key, value);
     }
 
-    public void setex(final String key, final int seconds, final String value) {
+    public void setEx(final String key, final long seconds, final String value) {
         redisTemplate.opsForValue().set(key, value, seconds, TimeUnit.SECONDS);
     }
 
-    public Boolean setnx(final String key, final String value) {
+    public Boolean setNx(final String key, final String value) {
         return redisTemplate.opsForValue().setIfAbsent(key, value);
     }
 
-
-    public Boolean expire(final String key, final int seconds) {
+    public Boolean expire(final String key, final long seconds) {
         return redisTemplate.expire(key, seconds, TimeUnit.SECONDS);
     }
 
@@ -62,43 +67,47 @@ public class RedisCurdTemplate {
         redisTemplate.delete(key);
     }
 
-    public void hset(final String key, final String field, final String value) {
+    public void hSet(final String key, final String field, final String value) {
         redisTemplate.opsForHash().put(key, field, value);
     }
 
-    public Long hlen(final String key) {
+    public void hSetAll(final String key, final Map<String, String> map) {
+        redisTemplate.opsForHash().putAll(key, map);
+    }
+
+    public Long hLen(final String key) {
         return redisTemplate.opsForHash().size(key);
     }
 
-    public Object hget(final String key, final String field) {
+    public Object hGet(final String key, final String field) {
         return redisTemplate.opsForHash().get(key, field);
     }
 
-    public Map<Object, Object> hgetAll(final String key) {
+    public Map<Object, Object> hGetAll(final String key) {
         return redisTemplate.opsForHash().entries(key);
     }
 
-    public Boolean zadd(final String key, final Double score, final String member) {
+    public Boolean zAdd(final String key, final Double score, final String member) {
         return redisTemplate.opsForZSet().add(key, member, score);
     }
 
-    public Set<TypedTuple<String>> zrevrangeWithScores(final String key) {
+    public Set<TypedTuple<String>> zReverseRangeWithScores(final String key) {
         return redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, -1);
     }
 
-    public Set<String> zrevrange(final String key) {
+    public Set<String> zReverseRange(final String key) {
         return redisTemplate.opsForZSet().reverseRange(key, 0, -1);
     }
 
-    public Double zincrby(final String key, final Double score, final String member) {
+    public Double zIncrBy(final String key, final Double score, final String member) {
         return redisTemplate.opsForZSet().incrementScore(key, member, score);
     }
 
-    public Long llen(final String key) {
+    public Long lLen(final String key) {
         return redisTemplate.opsForList().size(key);
     }
 
-    public Long lpush(final String key, final String... strings) {
+    public Long lPush(final String key, final String... strings) {
         return redisTemplate.opsForList().leftPushAll(key, strings);
     }
 
@@ -108,11 +117,11 @@ public class RedisCurdTemplate {
      * @param key
      * @return
      */
-    public String rpop(final String key) {
+    public String rPop(final String key) {
         return redisTemplate.opsForList().rightPop(key);
     }
 
-    public String brpop(final String key) {
+    public String brPop(final String key) {
         return redisTemplate.opsForList().rightPop(key, 0, TimeUnit.SECONDS);
     }
 
@@ -139,25 +148,35 @@ public class RedisCurdTemplate {
         return redisTemplate.opsForValue().increment(key, by);
     }
 
+    public long incr(String key, long by) {
+        return redisTemplate.opsForValue().increment(key, by);
+    }
+
+    public long incr(String key) {
+        return redisTemplate.opsForValue().increment(key);
+    }
+
+    public long hIncr(String key, String field, long by) {
+        return redisTemplate.opsForHash().increment(key, field, by);
+    }
+
     /**
      * 获取分布式锁
      *
      * @param lockKey  key
-     * @param locktime 锁有效时间
+     * @param lockTime 锁有效时间
      * @return
      */
-    public boolean getLock(String lockKey, int locktime) {
-        long expires = System.currentTimeMillis() + locktime * 1000 + 1;
+    public boolean getLock(String lockKey, long lockTime) {
+        long expires = System.currentTimeMillis() + lockTime * 1000 + 1;
         String expiresStr = String.valueOf(expires);
-        if (this.setnx(lockKey, expiresStr)) {
+        if (this.setNx(lockKey, expiresStr)) {
             return true;
         }
         String currentValueStr = get(lockKey);
-        if (StringUtils.isNotEmpty(currentValueStr)
-                && Long.parseLong(currentValueStr) < System.currentTimeMillis()) {
-            String oldValueStr = getset(lockKey, expiresStr);
+        if (StringUtils.isNotEmpty(currentValueStr) && Long.parseLong(currentValueStr) < System.currentTimeMillis()) {
+            String oldValueStr = getSet(lockKey, expiresStr);
             if (StringUtils.isNotEmpty(oldValueStr) && oldValueStr.equals(currentValueStr)) {
-
                 return true;
             }
         }

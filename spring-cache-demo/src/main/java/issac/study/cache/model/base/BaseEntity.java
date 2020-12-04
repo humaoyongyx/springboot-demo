@@ -1,6 +1,7 @@
 package issac.study.cache.model.base;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import issac.study.cache.constant.SystemConfigConstant;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
@@ -24,7 +25,7 @@ public class BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "IdGenerator")
     @GenericGenerator(
             name = "IdGenerator",
-            strategy = "issac.study.cache.core.generator.IdGenerator"
+            strategy = SystemConfigConstant.ENTITY_ID_GENERATOR_STRATEGY
     )
     private Integer id;
 
