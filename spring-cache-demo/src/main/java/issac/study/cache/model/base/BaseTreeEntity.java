@@ -12,7 +12,7 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public class BaseTreeEntity extends BaseEntity {
 
-    @Column(columnDefinition = "int NOT NULL COMMENT '跟节点的id'")
+    @Column(columnDefinition = "int DEFAULT NULL COMMENT '跟节点的id'")
     private Integer rootId;
     @Column(columnDefinition = "int DEFAULT NULL COMMENT '父节点的id'")
     private Integer parentId;
@@ -26,6 +26,4 @@ public class BaseTreeEntity extends BaseEntity {
     private Integer seq;
     @Column(columnDefinition = "int DEFAULT '0' COMMENT '子节点的当前顺序索引'")
     private Integer childSeq;
-    @Column(columnDefinition = "int DEFAULT '0' COMMENT '拥有的子节点数量'")
-    private Integer childNum;
 }

@@ -8,4 +8,5 @@ import issac.study.cache.base.BaseServiceTest;
 public class SimpleTest extends BaseServiceTest {
 
 
+
 }
