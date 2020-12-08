@@ -26,6 +26,7 @@ import java.util.Set;
 
 /**
  * 参考 https://www.cnblogs.com/mzq123/p/12629142.html
+ *
  * @author issac.hu
  */
 public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
@@ -101,6 +102,12 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
     @CachePut(value = "cacheDemo", key = "targetClass+''+#p0.id", condition = "target.cacheable()")
     @Override
     public <V> V update(BaseReq baseReq, Class<V> vClass, boolean includeNullValue) {
+        Object db = checkReqForUpdate(baseReq, includeNullValue);
+        Object updateDb = baseJpaRepository().save(db);
+        return ConvertUtils.convertObject(updateDb, vClass);
+    }
+
+    protected Object checkReqForUpdate(BaseReq baseReq, boolean includeNullValue) {
         Objects.requireNonNull(baseReq, "更新的对象不能为空");
         if (baseReq.getId() == null) {
             throw BusinessRuntimeException.error("id不能为空");
@@ -115,8 +122,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
         } else {
             ConvertUtils.copyNotNullProperties(baseReq, db);
         }
-        Object updateDb = baseJpaRepository().save(db);
-        return ConvertUtils.convertObject(updateDb, vClass);
+        return db;
     }
 
     /**
