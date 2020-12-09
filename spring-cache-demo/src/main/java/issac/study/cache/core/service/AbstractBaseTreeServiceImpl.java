@@ -67,7 +67,6 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
         if (parentId == null) {
             return super.update(baseReq, vClass, includeNullValue);
         } else {
-
             BaseTreeEntity dbForUpdate = (BaseTreeEntity) checkReqForUpdate(baseReq, includeNullValue);
             //parentId 相同只需更改内容
             if (dbForUpdate.getParentId() == parentId.intValue()) {
@@ -76,7 +75,7 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
             }
             // 如果它是叶子节点，只需修改parent和它本身
             if (dbForUpdate.getLeaf()) {
-                BaseTreeEntity newParent = addTo(parentId);
+                BaseTreeEntity newParent = addTo(parentId, dbForUpdate.getRootId());
                 dbForUpdate.setIdPath(newParent.getIdPath() + ID_PATH_DELIMITER + newParent.getId());
                 dbForUpdate.setDepth(newParent.getDepth() + 1);
                 dbForUpdate.setParentId(newParent.getId());
@@ -92,12 +91,15 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
         }
     }
 
-    private BaseTreeEntity addTo(Integer parentId) {
+    private BaseTreeEntity addTo(Integer parentId, Integer rootId) {
         Optional parentOp = this.baseJpaRepository().findById(parentId);
         if (!parentOp.isPresent()) {
             throw BusinessRuntimeException.error("父节点不存在");
         }
         BaseTreeEntity parent = (BaseTreeEntity) parentOp.get();
+        if (!rootId.equals(parent.getRootId())) {
+            throw BusinessRuntimeException.error("不能跨树更新");
+        }
         int seq = parent.getSeq() + 1;
         parent.setSeq(seq);
         parent = (BaseTreeEntity) this.baseJpaRepository().save(parent);
@@ -114,19 +116,41 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
                 throw BusinessRuntimeException.error("不能删除有子节点的数据");
             }
             super.deleteById(id);
-            Integer parentId = db.getParentId();
-            if (parentId != null) {
-                int ct = this.baseJpaRepository().countByParentId(parentId);
-                if (ct == 0) {
-                    BaseTreeEntity parent = (BaseTreeEntity) this.baseJpaRepository().findById(parentId).get();
-                    parent.setLeaf(true);
-                    this.baseJpaRepository().save(parent);
-                }
-            }
+            resetParentLeafField(db);
             return id;
         }
         return null;
     }
 
+    @Override
+    public Object deleteById(Object id, boolean deeper) {
+        if (deeper) {
+            Optional byId = this.baseJpaRepository().findById(id);
+            if (byId.isPresent()) {
+                BaseTreeEntity db = (BaseTreeEntity) byId.get();
+                super.deleteById(id);
+                resetParentLeafField(db);
+                if (!db.getLeaf()) {
+                    String nodeIdPath = db.getIdPath() + ID_PATH_DELIMITER + db.getId() + LIKE_SUFFIX;
+                    this.baseJpaRepository().deleteByIdPathIsLike(nodeIdPath);
+                }
+                return id;
+            }
+            return null;
+        } else {
+            return deleteById(id);
+        }
+    }
 
+    private void resetParentLeafField(BaseTreeEntity db) {
+        Integer parentId = db.getParentId();
+        if (parentId != null) {
+            int ct = this.baseJpaRepository().countByParentId(parentId);
+            if (ct == 0) {
+                BaseTreeEntity parent = (BaseTreeEntity) this.baseJpaRepository().findById(parentId).get();
+                parent.setLeaf(true);
+                this.baseJpaRepository().save(parent);
+            }
+        }
+    }
 }

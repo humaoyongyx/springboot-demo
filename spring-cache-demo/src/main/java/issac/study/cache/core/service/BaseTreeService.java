@@ -10,6 +10,16 @@ public interface BaseTreeService extends BaseCrudService {
     String ID_PATH_DELIMITER = "-";
     int SEQ_FIRST_START = 1;
     int INIT_CHILD_SEQ = 0;
+    String LIKE_SUFFIX = "%";
 
     BaseTreeJpaRepository baseJpaRepository();
+
+    /**
+     * 删除节点
+     *
+     * @param id
+     * @param deeper true删除其所有子节点
+     * @return
+     */
+    Object deleteById(Object id, boolean deeper);
 }

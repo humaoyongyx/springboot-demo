@@ -7,4 +7,5 @@ import issac.study.cache.model.OrganizationEntity;
  * @author issac.hu
  */
 public interface OrganizationRepository extends BaseTreeJpaRepository<OrganizationEntity, Integer> {
+
 }

@@ -7,6 +7,4 @@ import issac.study.cache.model.UserInfoEntity;
  * @author issac.hu
  */
 public interface UserInfoRepository extends BaseJpaRepository<UserInfoEntity, Integer> {
-
-
 }

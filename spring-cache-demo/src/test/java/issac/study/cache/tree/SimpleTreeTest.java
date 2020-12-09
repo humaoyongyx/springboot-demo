@@ -31,10 +31,19 @@ public class SimpleTreeTest extends BaseServiceTest {
         organizationReq.setName("leaf2_sub1");
         organizationReq.setParentId(leaf2.getId());
         OrganizationVo leaf2_sub1 = organizationService.save(organizationReq, OrganizationVo.class);
+        organizationReq = new OrganizationReq();
+        organizationReq.setName("leaf2_sub2");
+        organizationReq.setParentId(leaf2_sub1.getId());
+        OrganizationVo leaf2_sub2 = organizationService.save(organizationReq, OrganizationVo.class);
     }
 
     @Test
-    public void testDel(){
+    public void testDel() {
         organizationService.deleteById(12);
+    }
+
+    @Test
+    public void testDelDeeper() {
+        organizationService.deleteById(40, true);
     }
 }
