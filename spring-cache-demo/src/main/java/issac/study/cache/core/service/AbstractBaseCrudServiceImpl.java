@@ -4,6 +4,7 @@ import issac.study.cache.core.jpa.JpaQuerySpecification;
 import issac.study.cache.exception.BusinessRuntimeException;
 import issac.study.cache.exception.ErrorCode;
 import issac.study.cache.model.base.BaseEntity;
+import issac.study.cache.model.base.BaseTreeEntity;
 import issac.study.cache.req.base.BaseReq;
 import issac.study.cache.utils.ConvertUtils;
 import org.slf4j.Logger;
@@ -109,7 +110,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
         return ConvertUtils.convertObject(updateDb, vClass);
     }
 
-    protected Object checkReqForUpdate(BaseReq baseReq, boolean includeNullValue) {
+    protected BaseTreeEntity checkReqForUpdate(BaseReq baseReq, boolean includeNullValue) {
         Objects.requireNonNull(baseReq, "更新的对象不能为空");
         if (baseReq.getId() == null) {
             throw BusinessRuntimeException.error("id不能为空");
@@ -124,7 +125,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
         } else {
             ConvertUtils.copyNotNullProperties(baseReq, db);
         }
-        return db;
+        return (BaseTreeEntity) db;
     }
 
     /**

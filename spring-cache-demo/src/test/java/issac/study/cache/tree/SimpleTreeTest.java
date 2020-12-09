@@ -3,6 +3,7 @@ package issac.study.cache.tree;
 import issac.study.cache.base.BaseServiceTest;
 import issac.study.cache.req.OrganizationReq;
 import issac.study.cache.service.OrganizationService;
+import issac.study.cache.utils.ConvertUtils;
 import issac.study.cache.vo.OrganizationVo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author issac.hu
  */
 public class SimpleTreeTest extends BaseServiceTest {
+
     @Autowired
     OrganizationService organizationService;
 
@@ -35,6 +37,10 @@ public class SimpleTreeTest extends BaseServiceTest {
         organizationReq.setName("leaf2_sub2");
         organizationReq.setParentId(leaf2_sub1.getId());
         OrganizationVo leaf2_sub2 = organizationService.save(organizationReq, OrganizationVo.class);
+        organizationReq = new OrganizationReq();
+        organizationReq.setName("leaf2_sub2_3");
+        organizationReq.setParentId(leaf2_sub2.getId());
+        OrganizationVo leaf2_sub2_3 = organizationService.save(organizationReq, OrganizationVo.class);
     }
 
     @Test
@@ -45,5 +51,16 @@ public class SimpleTreeTest extends BaseServiceTest {
     @Test
     public void testDelDeeper() {
         organizationService.deleteById(43, true);
+    }
+
+    @Test
+    public void testUpdate() {
+        OrganizationReq organizationReq = new OrganizationReq();
+        organizationReq.setName("update");
+        organizationReq.setId(4);
+        organizationReq.setParentId(3);
+        organizationReq.setDeeper(true);
+        OrganizationVo update = organizationService.update(organizationReq, OrganizationVo.class);
+        System.out.println(ConvertUtils.toJsonString(update, true));
     }
 }

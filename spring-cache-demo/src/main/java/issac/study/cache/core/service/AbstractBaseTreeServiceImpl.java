@@ -41,7 +41,7 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
             BaseTreeEntity parentDb = (BaseTreeEntity) parent.get();
             baseTreeEntity.setDepth(parentDb.getDepth() + 1);
             baseTreeEntity.setParentId(parentId);
-            baseTreeEntity.setIdPath(parentDb.getIdPath() + ID_PATH_DELIMITER + parentDb.getId());
+            baseTreeEntity.setIdPath(getChildIdPathPrefix(parentDb));
             baseTreeEntity.setChildSeq(INIT_CHILD_SEQ);
             baseTreeEntity.setRootId(parentDb.getRootId());
             baseTreeEntity.setLeaf(true);
@@ -62,10 +62,12 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
     public <V> V update(BaseReq baseReq, Class<V> vClass, boolean includeNullValue) {
         BaseTreeReq baseTreeReq = (BaseTreeReq) baseReq;
         Integer parentId = baseTreeReq.getParentId();
+        //清除此值，防止被copy到db对象中
+        baseTreeReq.setParentId(null);
         if (parentId == null) {
             return super.update(baseReq, vClass, includeNullValue);
         } else {
-            BaseTreeEntity dbForUpdate = (BaseTreeEntity) checkReqForUpdate(baseReq, includeNullValue);
+            BaseTreeEntity dbForUpdate = checkReqForUpdate(baseReq, includeNullValue);
             //parentId 相同只需更改内容
             if (dbForUpdate.getParentId() == parentId.intValue()) {
                 Object updateDb = this.baseJpaRepository().save(dbForUpdate);
@@ -74,22 +76,66 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
             // 如果它是叶子节点，只需修改parent和它本身
             if (dbForUpdate.getLeaf()) {
                 BaseTreeEntity newParent = addTo(parentId, dbForUpdate.getRootId());
-                dbForUpdate.setIdPath(newParent.getIdPath() + ID_PATH_DELIMITER + newParent.getId());
-                dbForUpdate.setDepth(newParent.getDepth() + 1);
-                dbForUpdate.setParentId(newParent.getId());
+                resetParentForDel(dbForUpdate);
+                resetForUpdateParent(dbForUpdate, newParent);
                 Object updateDb = this.baseJpaRepository().save(dbForUpdate);
                 return ConvertUtils.convertObject(updateDb, vClass);
             }
             //非叶子节点修改父类
             if (baseTreeReq.getDeeper() != null && baseTreeReq.getDeeper()) {
-                throw BusinessRuntimeException.error("not implement!");
+                BaseTreeEntity newParent = addToWithLeaf(dbForUpdate, parentId);
+                resetParentForDel(dbForUpdate, 1);
+                String newIdPath = getChildIdPathPrefix(newParent);
+                String currentIdPath = dbForUpdate.getIdPath();
+                int depthIncr = newParent.getDepth() + 1 - dbForUpdate.getDepth();
+                String childIdPath = dbForUpdate.getIdPath() + ID_PATH_DELIMITER + dbForUpdate.getId() + LIKE_SUFFIX;
+                this.baseJpaRepository().updateTreeByIncr(depthIncr, currentIdPath, newIdPath, childIdPath);
+                resetForUpdateParent(dbForUpdate, newParent);
+                Object updateDb = this.baseJpaRepository().save(dbForUpdate);
+                return ConvertUtils.convertObject(updateDb, vClass);
             } else {
                 throw BusinessRuntimeException.error("此节点有子项，禁止修改父项");
             }
         }
     }
 
+    private void resetForUpdateParent(BaseTreeEntity dbForUpdate, BaseTreeEntity newParent) {
+        dbForUpdate.setIdPath(getChildIdPathPrefix(newParent));
+        dbForUpdate.setDepth(newParent.getDepth() + 1);
+        dbForUpdate.setParentId(newParent.getId());
+        dbForUpdate.setSeq(newParent.getChildSeq() + 1);
+    }
+
+    private BaseTreeEntity addToWithLeaf(BaseTreeEntity db, Integer parentId) {
+        Integer rootId = db.getRootId();
+        BaseTreeEntity parent = checkParent(parentId, rootId);
+        String childIdPath = getChildIdPathPrefix(db);
+        if (parent.getIdPath().startsWith(childIdPath)) {
+            throw BusinessRuntimeException.error("不能将节点追加到其子节点上");
+        }
+        parent = resetParentForAdd(parent);
+        return parent;
+    }
+
+    private String getChildIdPathPrefix(BaseTreeEntity db) {
+        return db.getIdPath() + ID_PATH_DELIMITER + db.getId();
+    }
+
     private BaseTreeEntity addTo(Integer parentId, Integer rootId) {
+        BaseTreeEntity parent = checkParent(parentId, rootId);
+        parent = resetParentForAdd(parent);
+        return parent;
+    }
+
+    private BaseTreeEntity resetParentForAdd(BaseTreeEntity parent) {
+        int childSeq = parent.getChildSeq() + 1;
+        parent.setChildSeq(childSeq);
+        parent.setLeaf(false);
+        this.baseJpaRepository().updateChildSeqAndLeafById(childSeq, false, parent.getId());
+        return parent;
+    }
+
+    private BaseTreeEntity checkParent(Integer parentId, Integer rootId) {
         Optional parentOp = this.baseJpaRepository().findById(parentId);
         if (!parentOp.isPresent()) {
             throw BusinessRuntimeException.error("父节点不存在");
@@ -98,9 +144,6 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
         if (!rootId.equals(parent.getRootId())) {
             throw BusinessRuntimeException.error("不能跨树更新");
         }
-        int seq = parent.getSeq() + 1;
-        parent.setSeq(seq);
-        parent = (BaseTreeEntity) this.baseJpaRepository().save(parent);
         return parent;
     }
 
@@ -114,7 +157,7 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
                 throw BusinessRuntimeException.error("不能删除有子节点的数据");
             }
             super.deleteById(id);
-            resetParentLeafField(db);
+            resetParentForDel(db);
             return id;
         }
         return null;
@@ -127,7 +170,7 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
             if (byId.isPresent()) {
                 BaseTreeEntity db = (BaseTreeEntity) byId.get();
                 super.deleteById(id);
-                resetParentLeafField(db);
+                resetParentForDel(db);
                 if (!db.getLeaf()) {
                     String nodeIdPath = db.getIdPath() + ID_PATH_DELIMITER + db.getId() + LIKE_SUFFIX;
                     this.baseJpaRepository().deleteByIdPathIsLike(nodeIdPath);
@@ -140,13 +183,20 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
         }
     }
 
-    private void resetParentLeafField(BaseTreeEntity db) {
+    private void resetParentForDel(BaseTreeEntity db) {
+        resetParentForDel(db, 0);
+    }
+
+    private void resetParentForDel(BaseTreeEntity db, int offset) {
+        if (offset < 0) {
+            offset = 0;
+        }
         Integer parentId = db.getParentId();
         if (parentId != null) {
             int ct = this.baseJpaRepository().countByParentId(parentId);
             //如果已经没有子节点了，那么更新节点为叶子节点
-            if (ct == 0) {
-                this.baseJpaRepository().updateParentToLeaf();
+            if (ct == offset) {
+                this.baseJpaRepository().updateParentToLeaf(parentId);
             }
         }
     }

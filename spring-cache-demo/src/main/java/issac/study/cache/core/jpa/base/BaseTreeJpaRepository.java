@@ -38,8 +38,8 @@ public interface BaseTreeJpaRepository<T extends BaseTreeEntity, ID extends Seri
      */
     @Modifying
     @Transactional
-    @Query(value = "update #{#entityName} set leaf = 1")
-    void updateParentToLeaf();
+    @Query(value = "update #{#entityName} set leaf = 1 where id = ?1")
+    void updateParentToLeaf(Integer id);
 
     @Modifying
     @Transactional
@@ -50,4 +50,23 @@ public interface BaseTreeJpaRepository<T extends BaseTreeEntity, ID extends Seri
     @Transactional
     @Query(value = "update #{#entityName} set rootId = ?1 where id = ?2")
     void updateRootIdById(Integer rootId, Integer id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "update #{#entityName} set parentId = ?1 where id = ?2")
+    void updateParentIdById(Integer parentId, Integer id);
+
+    /**
+     * 更新一棵树，通过偏移量
+     *
+     * @param depthIncr
+     * @param currentIdPath
+     * @param newIdPath
+     * @param childIdPath
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "update #{#entityName} set depth = depth + ?1 , id_path = REPLACE(id_path , ?2 , ?3) where id_path like ?4")
+    void updateTreeByIncr(Integer depthIncr, String currentIdPath, String newIdPath, String childIdPath);
+
 }
