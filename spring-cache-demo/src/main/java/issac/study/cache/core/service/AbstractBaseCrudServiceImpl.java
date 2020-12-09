@@ -69,7 +69,7 @@ public abstract class AbstractBaseCrudServiceImpl implements BaseCrudService {
      */
     @CacheEvict(value = "cacheDemo", key = "targetClass+''+#id", condition = "target.cacheable()")
     @Override
-    public Object deleteById(Object id) {
+    public Integer deleteById(Integer id) {
         try {
             baseJpaRepository().deleteById(id);
             return id;

@@ -13,6 +13,7 @@ import java.util.Optional;
  */
 public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServiceImpl implements BaseTreeService {
 
+
     protected abstract Class<? extends BaseTreeEntity> entityClass();
 
     @Override
@@ -30,7 +31,8 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
             baseTreeEntity.setChildSeq(INIT_CHILD_SEQ);
             BaseTreeEntity db = (BaseTreeEntity) this.baseJpaRepository().save(baseTreeEntity);
             db.setRootId(db.getId());
-            result = this.baseJpaRepository().save(db);
+            this.baseJpaRepository().updateRootIdById(db.getId(), db.getId());
+            result = db;
         } else {
             Optional parent = this.baseJpaRepository().findById(parentId);
             if (!parent.isPresent()) {
@@ -43,13 +45,9 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
             baseTreeEntity.setChildSeq(INIT_CHILD_SEQ);
             baseTreeEntity.setRootId(parentDb.getRootId());
             baseTreeEntity.setLeaf(true);
-            if (parentDb.getLeaf()) {
-                parentDb.setLeaf(false);
-            }
             Integer currentChildSeq = parentDb.getChildSeq() + 1;
-            parentDb.setChildSeq(currentChildSeq);
             baseTreeEntity.setSeq(currentChildSeq);
-            this.baseJpaRepository().save(parentDb);
+            this.baseJpaRepository().updateChildSeqAndLeafById(currentChildSeq, false, parentDb.getId());
             result = this.baseJpaRepository().save(baseTreeEntity);
         }
         return ConvertUtils.convertObject(result, vClass);
@@ -108,7 +106,7 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
 
 
     @Override
-    public Object deleteById(Object id) {
+    public Integer deleteById(Integer id) {
         Optional byId = this.baseJpaRepository().findById(id);
         if (byId.isPresent()) {
             BaseTreeEntity db = (BaseTreeEntity) byId.get();
@@ -123,7 +121,7 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
     }
 
     @Override
-    public Object deleteById(Object id, boolean deeper) {
+    public Integer deleteById(Integer id, boolean deeper) {
         if (deeper) {
             Optional byId = this.baseJpaRepository().findById(id);
             if (byId.isPresent()) {
@@ -146,10 +144,9 @@ public abstract class AbstractBaseTreeServiceImpl extends AbstractBaseCrudServic
         Integer parentId = db.getParentId();
         if (parentId != null) {
             int ct = this.baseJpaRepository().countByParentId(parentId);
+            //如果已经没有子节点了，那么更新节点为叶子节点
             if (ct == 0) {
-                BaseTreeEntity parent = (BaseTreeEntity) this.baseJpaRepository().findById(parentId).get();
-                parent.setLeaf(true);
-                this.baseJpaRepository().save(parent);
+                this.baseJpaRepository().updateParentToLeaf();
             }
         }
     }

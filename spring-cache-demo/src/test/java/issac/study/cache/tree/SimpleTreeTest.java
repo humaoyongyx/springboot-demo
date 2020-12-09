@@ -39,11 +39,11 @@ public class SimpleTreeTest extends BaseServiceTest {
 
     @Test
     public void testDel() {
-        organizationService.deleteById(12);
+        organizationService.deleteById(44);
     }
 
     @Test
     public void testDelDeeper() {
-        organizationService.deleteById(40, true);
+        organizationService.deleteById(43, true);
     }
 }

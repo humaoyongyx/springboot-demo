@@ -35,7 +35,7 @@ public interface BaseCrudService extends CacheableService {
      *
      * @param id
      */
-    Object deleteById(Object id);
+    Integer deleteById(Integer id);
 
     /**
      * 更新接口

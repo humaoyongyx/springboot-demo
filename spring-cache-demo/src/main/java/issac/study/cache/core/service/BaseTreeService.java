@@ -21,5 +21,5 @@ public interface BaseTreeService extends BaseCrudService {
      * @param deeper true删除其所有子节点
      * @return
      */
-    Object deleteById(Object id, boolean deeper);
+    Integer deleteById(Integer id, boolean deeper);
 }
