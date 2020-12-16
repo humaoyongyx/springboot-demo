@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="issac.study.mbp.mapper.OrganizationMapper">
+
+
+    <select id="selectPageVo" resultType="issac.study.mbp.model.OrganizationModel">
+        SELECT * FROM organization_mbp WHERE name like  CONCAT('%',#{model.name},'%')
+     </select>
+
+</mapper>

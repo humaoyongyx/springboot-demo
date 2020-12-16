@@ -1,0 +1,25 @@
+package issac.study.mbp.model.base;
+
+import lombok.Data;
+
+/**
+ * @author issac.hu
+ */
+@Data
+public class BaseTreeModel extends BaseModel {
+
+    private Integer rootId;
+
+    private Integer parentId;
+
+    private String idPath;
+
+    private Integer depth;
+
+    private Boolean leaf;
+
+    private Integer seq;
+
+    private Integer childSeq;
+
+}

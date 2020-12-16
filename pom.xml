@@ -29,6 +29,7 @@
         <module>mybatis-demo</module>
         <module>mybatis-jpa-demo</module>
         <module>spring-cache-demo</module>
+        <module>mbp-demo</module>
     </modules>
 
     <build>
