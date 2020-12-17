@@ -8,7 +8,7 @@ import issac.study.mbp.req.base.BaseTreeReq;
  *
  * @author issac.hu
  */
-public interface BaseTreeCrudService<T extends BaseTreeModel, V> extends GeneralCrudService<T, V> {
+public interface BaseTreeCrudService<T extends BaseTreeModel, V> extends BaseCrudService<T, V> {
     int ROOT_DEPTH = 1;
     String ID_PATH_DELIMITER = "-";
     int SEQ_FIRST_START = 1;

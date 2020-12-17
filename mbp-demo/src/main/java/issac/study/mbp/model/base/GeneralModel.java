@@ -24,6 +24,6 @@ public class GeneralModel implements Serializable {
     private Date createdTime;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updatedTime = new Date();
+    private Date updatedTime;
 
 }

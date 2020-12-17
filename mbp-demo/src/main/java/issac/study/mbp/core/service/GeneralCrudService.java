@@ -15,10 +15,10 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
     /**
      * 保存实体,且不做任何验证
      *
-     * @param entity
+     * @param model
      * @return
      */
-    T saveEntity(T entity);
+    T saveModel(T model);
 
     /**
      * 单条新增且获取保存后的值
@@ -31,19 +31,19 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
     /**
      * 更新实体，不做任何验证
      *
-     * @param entity
+     * @param model
      * @return
      */
-    T updateEntity(T entity);
+    T updateModel(T model);
 
     /**
      * 更新实体，不做任何验证
      *
-     * @param entity
+     * @param model
      * @param includeNullValue 是否包含null值
      * @return
      */
-    T updateEntity(T entity, boolean includeNullValue);
+    T updateModel(T model, boolean includeNullValue);
 
     /**
      * 单条更新且获取更新后的值

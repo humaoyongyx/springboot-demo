@@ -52,11 +52,11 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
     }
 
     @Override
-    public T saveEntity(T entity) {
-        entity.setId(null);
-        entity.setCreatedTime(new Date());
-        super.save(entity);
-        return entity;
+    public T saveModel(T model) {
+        model.setId(null);
+        model = commonSave(model);
+        super.save(model);
+        return model;
     }
 
     @Override
@@ -64,37 +64,59 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
         Objects.requireNonNull(baseReq, "保存的对象不能为空");
         baseReq.setId(null);
         T model = ConvertUtils.convertObject(baseReq, getEntityClass());
-        model.setCreatedTime(new Date());
-        model = saveGetCustom(model);
+        model = commonSave(model);
         super.save(model);
         return ConvertUtils.convertObject(model, voClass);
     }
 
 
+    private T commonSave(T model) {
+        model.setCreatedTime(new Date());
+        model = saveCustom(model);
+        return model;
+    }
+
     /**
-     * 子类可以继承复写
+     * 子类可以继承覆写
      *
      * @param model
      * @return
      */
-    protected T saveGetCustom(T model) {
+    protected T saveCustom(T model) {
+        return model;
+    }
+
+    private T commonUpdate(T model) {
+        model.setUpdatedTime(new Date());
+        model = updateCustom(model);
+        return model;
+    }
+
+    /**
+     * 子类继承覆写
+     *
+     * @param model
+     * @return
+     */
+    protected T updateCustom(T model) {
         return model;
     }
 
 
     @Override
-    public T updateEntity(T entity) {
-        return updateEntity(entity, false);
+    public T updateModel(T model) {
+        return updateModel(model, false);
     }
 
     @Override
-    public T updateEntity(T entity, boolean includeNullValue) {
-        T db = getBaseMapper().selectById(entity.getId());
+    public T updateModel(T model, boolean includeNullValue) {
+        T db = getBaseMapper().selectById(model.getId());
         if (includeNullValue) {
-            ConvertUtils.copyWithNullProperties(entity, db);
+            ConvertUtils.copyWithNullProperties(model, db);
         } else {
-            ConvertUtils.copyNotNullProperties(entity, db);
+            ConvertUtils.copyNotNullProperties(model, db);
         }
+        db = commonUpdate(db);
         getBaseMapper().updateById(db);
         return db;
     }
@@ -107,6 +129,7 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
     @Override
     public V updateGet(BaseReq baseReq, boolean includeNullValue) {
         T db = checkReqForUpdate(baseReq, includeNullValue);
+        db = commonUpdate(db);
         getBaseMapper().updateById(db);
         return ConvertUtils.convertObject(db, voClass);
     }

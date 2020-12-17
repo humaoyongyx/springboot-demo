@@ -11,8 +11,8 @@ import lombok.Data;
 public class BaseModel extends GeneralModel {
 
     @TableField(fill = FieldFill.UPDATE)
-    private String updatedBy;
+    private Integer updatedBy;
 
     @TableField(fill = FieldFill.INSERT)
-    private String createdBy;
+    private Integer createdBy;
 }

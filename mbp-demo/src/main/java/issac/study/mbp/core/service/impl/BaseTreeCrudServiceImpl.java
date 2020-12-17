@@ -12,7 +12,7 @@ import issac.study.mbp.utils.ConvertUtils;
  *
  * @author issac.hu
  */
-public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends BaseTreeModel, V> extends GeneralCrudServiceImpl<M, T, V> implements BaseTreeCrudService<T, V> {
+public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends BaseTreeModel, V> extends BaseCrudServiceImpl<M, T, V> implements BaseTreeCrudService<T, V> {
 
     @Override
     public V save(BaseTreeReq baseTreeReq) {
@@ -27,7 +27,7 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
             baseTreeEntity.setLeaf(true);
             baseTreeEntity.setSeq(SEQ_FIRST_START);
             baseTreeEntity.setChildSeq(INIT_CHILD_SEQ);
-            T db = saveEntity(baseTreeEntity);
+            T db = saveModel(baseTreeEntity);
             db.setRootId(db.getId());
             this.getBaseMapper().updateRootIdById(currentTableName(), db.getId(), db.getId());
             result = db;
@@ -45,7 +45,7 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
             Integer currentChildSeq = parentDb.getChildSeq() + 1;
             baseTreeEntity.setSeq(currentChildSeq);
             this.getBaseMapper().updateChildSeqAndLeafById(currentTableName(), currentChildSeq, LEAF_FALSE, parentDb.getId());
-            result = saveEntity(baseTreeEntity);
+            result = saveModel(baseTreeEntity);
         }
         return ConvertUtils.convertObject(result, voClass);
     }

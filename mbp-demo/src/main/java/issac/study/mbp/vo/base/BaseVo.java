@@ -6,6 +6,10 @@ import lombok.Data;
  * @author issac.hu
  */
 @Data
-public class BaseVo {
-    private Integer id;
+public class BaseVo extends GeneralVo {
+
+    private Integer updatedBy;
+
+    private Integer createdBy;
+
 }
