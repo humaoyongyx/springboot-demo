@@ -7,5 +7,5 @@ spring:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql日志
-  type-aliases-package: issac.study.mybatis.model #扫描表映射的类，默认是自动加下划线
-  mapper-locations: classpath*:issac.study.mbp.mapper #classpath* 表示包括jar包内的类路径
+  type-aliases-package: issac.study.mbp.**.model #扫描表映射的类，默认是自动加下划线
+  mapper-locations: classpath*:issac.study.mbp.**.mapper #classpath* 表示包括jar包内的类路径

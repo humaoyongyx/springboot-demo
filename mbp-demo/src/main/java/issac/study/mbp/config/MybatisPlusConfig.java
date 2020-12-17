@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * @author issac.hu
  */
 @Configuration
-@MapperScan("issac.study.mbp.mapper")
+@MapperScan("issac.study.mbp.**.mapper")
 public class MybatisPlusConfig {
 
     @Bean

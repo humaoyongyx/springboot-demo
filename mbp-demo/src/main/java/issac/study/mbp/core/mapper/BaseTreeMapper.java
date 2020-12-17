@@ -1,4 +1,4 @@
-package issac.study.mbp.mapper.base;
+package issac.study.mbp.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import issac.study.mbp.core.model.BaseTreeModel;

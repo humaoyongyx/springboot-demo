@@ -1,7 +1,7 @@
 package issac.study.mbp.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import issac.study.mbp.mapper.base.BaseTreeMapper;
+import issac.study.mbp.core.mapper.BaseTreeMapper;
 import issac.study.mbp.model.OrganizationModel;
 import org.apache.ibatis.annotations.Param;
 
