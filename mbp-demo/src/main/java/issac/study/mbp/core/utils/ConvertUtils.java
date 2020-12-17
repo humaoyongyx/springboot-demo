@@ -1,4 +1,4 @@
-package issac.study.mbp.utils;
+package issac.study.mbp.core.utils;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;

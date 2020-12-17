@@ -1,4 +1,4 @@
-package issac.study.mbp.utils;
+package issac.study.mbp.core.utils;
 
 import org.apache.commons.lang3.StringUtils;
 

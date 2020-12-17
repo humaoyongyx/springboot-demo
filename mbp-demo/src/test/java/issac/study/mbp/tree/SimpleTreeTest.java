@@ -2,9 +2,9 @@ package issac.study.mbp.tree;
 
 
 import issac.study.mbp.base.BaseServiceTest;
+import issac.study.mbp.core.utils.ConvertUtils;
 import issac.study.mbp.req.OrganizationReq;
 import issac.study.mbp.service.OrganizationService;
-import issac.study.mbp.utils.ConvertUtils;
 import issac.study.mbp.vo.OrganizationVo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
