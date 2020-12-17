@@ -1,4 +1,4 @@
-package issac.study.mbp.exception;
+package issac.study.mbp.core.exception;
 
 /**
  * 通用错误接口

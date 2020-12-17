@@ -10,5 +10,4 @@ public class MbpApplication {
         SpringApplication.run(MbpApplication.class, args);
     }
 
-
 }

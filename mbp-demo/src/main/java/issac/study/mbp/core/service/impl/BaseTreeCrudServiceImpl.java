@@ -1,11 +1,11 @@
 package issac.study.mbp.core.service.impl;
 
+import issac.study.mbp.core.exception.BusinessRuntimeException;
 import issac.study.mbp.core.mapper.BaseTreeMapper;
 import issac.study.mbp.core.model.BaseTreeModel;
 import issac.study.mbp.core.req.BaseTreeReq;
 import issac.study.mbp.core.service.BaseTreeCrudService;
 import issac.study.mbp.core.utils.ConvertUtils;
-import issac.study.mbp.exception.BusinessRuntimeException;
 
 /**
  * 树形结构的基础接口
@@ -33,8 +33,8 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
             result = db;
         } else {
             T parentDb = this.getBaseMapper().selectById(parentId);
-            if (parentDb != null) {
-                BusinessRuntimeException.error("节点的父项id不存在");
+            if (parentDb == null) {
+                throw BusinessRuntimeException.error("节点的父项id不存在");
             }
             baseTreeEntity.setDepth(parentDb.getDepth() + 1);
             baseTreeEntity.setParentId(parentId);

@@ -1,8 +1,8 @@
 package issac.study.mbp.core.config;
 
+import issac.study.mbp.core.exception.BusinessRuntimeException;
+import issac.study.mbp.core.exception.Error404RuntimeException;
 import issac.study.mbp.core.response.ResponseVo;
-import issac.study.mbp.exception.BusinessRuntimeException;
-import issac.study.mbp.exception.Error404RuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
