@@ -1,4 +1,4 @@
-package issac.study.mbp.config;
+package issac.study.mbp.core.config;
 
 import issac.study.mbp.core.response.ResponseVo;
 import issac.study.mbp.exception.BusinessRuntimeException;
@@ -13,10 +13,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * <p>Title: GlobalExceptionHandler</p>
  * 全局异常拦截器
  *
- * @author Xuly
+ * @author issac
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {

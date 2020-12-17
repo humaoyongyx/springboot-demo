@@ -1,4 +1,4 @@
-package issac.study.mbp.config;
+package issac.study.mbp.core.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
