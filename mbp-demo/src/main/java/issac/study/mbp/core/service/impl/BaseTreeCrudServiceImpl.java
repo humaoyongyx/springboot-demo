@@ -1,21 +1,36 @@
 package issac.study.mbp.core.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import issac.study.mbp.core.exception.BusinessRuntimeException;
 import issac.study.mbp.core.mapper.BaseTreeMapper;
 import issac.study.mbp.core.model.BaseTreeModel;
 import issac.study.mbp.core.req.BaseTreeReq;
 import issac.study.mbp.core.service.BaseTreeCrudService;
 import issac.study.mbp.core.utils.ConvertUtils;
+import issac.study.mbp.core.vo.BaseTreeVo;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 树形结构的基础接口
  *
  * @author issac.hu
  */
-public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends BaseTreeModel, V> extends BaseCrudServiceImpl<M, T, V> implements BaseTreeCrudService<T, V> {
+public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends BaseTreeModel, V extends BaseTreeVo> extends BaseCrudServiceImpl<M, T, V> implements BaseTreeCrudService<T, V> {
+
+    /**
+     * 无需处理的值
+     *
+     * @param baseTreeReq
+     */
+    private void removeNotNeedValue(BaseTreeReq baseTreeReq) {
+        baseTreeReq.setRootId(null);
+    }
 
     @Override
     public V save(BaseTreeReq baseTreeReq) {
+        removeNotNeedValue(baseTreeReq);
         T baseTreeEntity = ConvertUtils.convertObject(baseTreeReq, entityClass);
         Integer parentId = baseTreeEntity.getParentId();
         baseTreeEntity.setId(null);
@@ -50,6 +65,7 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         return ConvertUtils.convertObject(result, voClass);
     }
 
+
     @Override
     public V update(BaseTreeReq baseTreeReq) {
         return update(baseTreeReq, false);
@@ -57,6 +73,7 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
 
     @Override
     public V update(BaseTreeReq baseTreeReq, boolean includeNullValue) {
+        removeNotNeedValue(baseTreeReq);
         Integer parentId = baseTreeReq.getParentId();
         //清除此值，防止被copy到db对象中
         baseTreeReq.setParentId(null);
@@ -72,10 +89,10 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
             // 如果它是叶子节点，只需修改parent和它本身
             if (dbForUpdate.getLeaf()) {
                 T newParent = addTo(parentId, dbForUpdate.getRootId());
-                resetParentForDel(dbForUpdate);
+                resetParentForDel(dbForUpdate, 1);
                 resetForUpdateParent(dbForUpdate, newParent);
-                Object updateDb = this.updateById(dbForUpdate);
-                return ConvertUtils.convertObject(updateDb, voClass);
+                this.updateById(dbForUpdate);
+                return ConvertUtils.convertObject(dbForUpdate, voClass);
             }
             //非叶子节点修改父类
             if (baseTreeReq.getDeeper() != null && baseTreeReq.getDeeper()) {
@@ -190,6 +207,84 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
             //如果已经没有子节点了，那么更新节点为叶子节点
             if (ct == offset) {
                 this.getBaseMapper().updateToLeaf(currentTableName(), parentId);
+            }
+        }
+    }
+
+    public List<T> getChildList(Integer parentId) {
+        T parent = this.getBaseMapper().selectById(parentId);
+        return getChildList(parent);
+    }
+
+    public List<T> getChildList(T parent) {
+        if (parent != null && !parent.getLeaf()) {
+            String childIdPath = getChildIdPathPrefix(parent);
+            List<T> childList = this.getBaseMapper().selectList(new QueryWrapper<T>().likeRight("id_path", childIdPath));
+            return childList;
+        }
+        return new ArrayList<>();
+    }
+
+
+    @Override
+    public List<V> tree(BaseTreeReq baseTreeReq) {
+        QueryWrapper<T> queryWrapper = new QueryWrapper<>();
+        Integer parentId = baseTreeReq.getParentId();
+        queryWrapper.eq(baseTreeReq.getRootId() != null, "root_id", baseTreeReq.getRootId());
+        List<T> childList = new ArrayList<>();
+        T parent = null;
+        if (parentId != null) {
+            if (baseTreeReq.getDeeper() != null && baseTreeReq.getDeeper()) {
+                parent = this.getBaseMapper().selectById(parentId);
+                childList = getChildList(parent);
+            } else {
+                queryWrapper.eq("parent_id", parentId);
+            }
+        }
+        List<T> result;
+        if (childList.isEmpty()) {
+            result = this.getBaseMapper().selectList(queryWrapper);
+        } else {
+            result = childList;
+        }
+        if (result.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<V> vResult = ConvertUtils.convertList(result, voClass);
+        Map<Integer, List<V>> childMap = vResult.stream().filter(it -> it.getParentId() != null).collect(Collectors.groupingBy(it -> it.getParentId()));
+        List<V> rootList = getRootList(baseTreeReq, vResult, parent, childMap);
+        //parentId不为空，且deeper=false的时候，直接返回
+        if (rootList == null) {
+            Collections.sort(vResult, Comparator.comparingInt(BaseTreeVo::getSeq));
+            return vResult;
+        }
+        setChildItem(rootList, childMap);
+        return rootList;
+    }
+
+    private List<V> getRootList(BaseTreeReq baseTreeReq, List<V> vResult, T parent, Map<Integer, List<V>> childMap) {
+        if (baseTreeReq.getParentId() == null) {
+            return vResult.stream().filter(it -> it.getParentId() == null).collect(Collectors.toList());
+        } else {
+            if (baseTreeReq.getDeeper() != null && baseTreeReq.getDeeper()) {
+                if (parent == null) {
+                    return new ArrayList<>();
+                } else {
+                    return childMap.get(parent.getId());
+                }
+            } else {
+                return null;
+            }
+        }
+    }
+
+    private void setChildItem(List<V> rootList, Map<Integer, List<V>> childMap) {
+        for (V root : rootList) {
+            if (!root.getLeaf()) {
+                List<V> childItems = childMap.get(root.getId());
+                Collections.sort(childItems, Comparator.comparingInt(BaseTreeVo::getSeq));
+                root.setChildren(childItems);
+                setChildItem(childItems, childMap);
             }
         }
     }

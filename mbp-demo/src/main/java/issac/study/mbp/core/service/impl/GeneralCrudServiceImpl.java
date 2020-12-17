@@ -71,7 +71,9 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
 
 
     private T commonSave(T model) {
-        model.setCreatedTime(new Date());
+        Date time = new Date();
+        model.setCreatedTime(time);
+        model.setUpdatedTime(time);
         model = saveCustom(model);
         return model;
     }
@@ -167,13 +169,14 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
                 continue;
             }
             reqField.setAccessible(true);
+            String column = com.baomidou.mybatisplus.core.toolkit.StringUtils.camelToUnderline(fieldName);
             try {
                 Object val = reqField.get(baseReq);
                 if (val != null) {
                     if (val instanceof String) {
-                        queryWrapper.like(StringUtils.isNotBlank((CharSequence) val), fieldName, val);
+                        queryWrapper.like(StringUtils.isNotBlank((CharSequence) val), column, val);
                     } else if (val instanceof Integer || val instanceof Long || val instanceof Boolean) {
-                        queryWrapper.eq(val != null, fieldName, val);
+                        queryWrapper.eq(val != null, column, val);
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -214,4 +217,6 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
         newPage.setRecords(ConvertUtils.convertList(page.getRecords(), voClass));
         return newPage;
     }
+
+
 }

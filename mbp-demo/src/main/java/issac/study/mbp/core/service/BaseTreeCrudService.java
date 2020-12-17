@@ -4,6 +4,8 @@ package issac.study.mbp.core.service;
 import issac.study.mbp.core.model.BaseTreeModel;
 import issac.study.mbp.core.req.BaseTreeReq;
 
+import java.util.List;
+
 /**
  * 树形结构的基础接口
  *
@@ -59,4 +61,12 @@ public interface BaseTreeCrudService<T extends BaseTreeModel, V> extends BaseCru
      * @return
      */
     Integer deleteById(Integer id, boolean deeper);
+
+    /**
+     * 查询树形结构
+     *
+     * @param baseTreeReq
+     * @return
+     */
+    List<V> tree(BaseTreeReq baseTreeReq);
 }

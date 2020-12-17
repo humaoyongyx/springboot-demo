@@ -46,20 +46,20 @@ public class SimpleTreeTest extends BaseServiceTest {
 
     @Test
     public void testDel() {
-        organizationService.deleteById(36);
+        organizationService.deleteById(43);
     }
 
     @Test
     public void testDelDeeper() {
-        organizationService.deleteById(36, true);
+        organizationService.deleteById(46, true);
     }
 
     @Test
     public void testUpdate() {
         OrganizationReq organizationReq = new OrganizationReq();
         organizationReq.setName("update");
-        organizationReq.setId(40);
-        organizationReq.setParentId(37);
+        organizationReq.setId(45);
+        organizationReq.setParentId(43);
         organizationReq.setDeeper(true);
         OrganizationVo update = organizationService.update(organizationReq);
         System.out.println(ConvertUtils.toJsonString(update, true));

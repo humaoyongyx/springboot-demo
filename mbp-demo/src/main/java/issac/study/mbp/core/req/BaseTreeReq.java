@@ -7,6 +7,9 @@ import lombok.Data;
  */
 @Data
 public class BaseTreeReq extends BaseReq {
+
+    private Integer rootId;
+
     private Integer parentId;
     /**
      * 是否递归操作

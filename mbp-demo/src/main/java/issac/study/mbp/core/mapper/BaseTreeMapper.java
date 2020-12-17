@@ -72,4 +72,5 @@ public interface BaseTreeMapper<T extends BaseTreeModel> extends BaseMapper<T> {
      * @param childIdPath
      */
     void updateTreeByIncr(@Param("tableName") String tableName, @Param("depthIncr") Integer depthIncr, @Param("currentIdPath") String currentIdPath, @Param("newIdPath") String newIdPath, @Param("childIdPath") String childIdPath);
+
 }

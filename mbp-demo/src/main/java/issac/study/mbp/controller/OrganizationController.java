@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @author issac.hu
  */
@@ -68,6 +70,12 @@ public class OrganizationController {
         OrganizationMapper baseMapper = (OrganizationMapper) organizationService.getBaseMapper();
         IPage<OrganizationModel> organizationModelIPage = baseMapper.selectPageVo(pageReq, organizationModel);
         return organizationModelIPage;
+    }
+
+    @GetMapping("/tree")
+    public List<OrganizationVo> tree(OrganizationReq organizationReq) {
+        List<OrganizationVo> tree = organizationService.tree(organizationReq);
+        return tree;
     }
 
 }
