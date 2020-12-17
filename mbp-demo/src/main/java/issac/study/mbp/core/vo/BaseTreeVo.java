@@ -1,4 +1,4 @@
-package issac.study.mbp.vo.base;
+package issac.study.mbp.core.vo;
 
 import lombok.Data;
 

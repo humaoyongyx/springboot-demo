@@ -1,7 +1,7 @@
 package issac.study.mbp.core.service;
 
 
-import issac.study.mbp.model.base.BaseModel;
+import issac.study.mbp.core.model.BaseModel;
 
 /**
  * @author issac.hu

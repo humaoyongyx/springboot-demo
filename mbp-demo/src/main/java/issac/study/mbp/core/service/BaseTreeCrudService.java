@@ -1,7 +1,8 @@
 package issac.study.mbp.core.service;
 
-import issac.study.mbp.model.base.BaseTreeModel;
-import issac.study.mbp.req.base.BaseTreeReq;
+
+import issac.study.mbp.core.model.BaseTreeModel;
+import issac.study.mbp.core.req.BaseTreeReq;
 
 /**
  * 树形结构的基础接口

@@ -2,10 +2,10 @@ package issac.study.mbp.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import issac.study.mbp.core.req.BasePageReq;
 import issac.study.mbp.mapper.OrganizationMapper;
 import issac.study.mbp.model.OrganizationModel;
 import issac.study.mbp.req.OrganizationReq;
-import issac.study.mbp.req.base.BasePageReq;
 import issac.study.mbp.service.OrganizationService;
 import issac.study.mbp.vo.OrganizationVo;
 import org.springframework.beans.factory.annotation.Autowired;

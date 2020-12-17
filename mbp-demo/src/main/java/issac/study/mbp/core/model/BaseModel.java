@@ -1,4 +1,4 @@
-package issac.study.mbp.model.base;
+package issac.study.mbp.core.model;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;

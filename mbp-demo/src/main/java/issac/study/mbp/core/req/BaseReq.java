@@ -1,4 +1,4 @@
-package issac.study.mbp.req.base;
+package issac.study.mbp.core.req;
 
 import lombok.Data;
 

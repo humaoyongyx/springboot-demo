@@ -3,9 +3,10 @@ package issac.study.mbp.core.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import issac.study.mbp.model.base.GeneralModel;
-import issac.study.mbp.req.base.BasePageReq;
-import issac.study.mbp.req.base.BaseReq;
+import issac.study.mbp.core.model.GeneralModel;
+import issac.study.mbp.core.req.BasePageReq;
+import issac.study.mbp.core.req.BaseReq;
+
 
 /**
  * @author issac.hu

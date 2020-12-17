@@ -1,6 +1,6 @@
 package issac.study.mbp.vo;
 
-import issac.study.mbp.vo.base.BaseTreeVo;
+import issac.study.mbp.core.vo.BaseTreeVo;
 import lombok.Data;
 
 /**

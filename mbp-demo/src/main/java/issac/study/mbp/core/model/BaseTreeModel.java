@@ -1,4 +1,4 @@
-package issac.study.mbp.model.base;
+package issac.study.mbp.core.model;
 
 import lombok.Data;
 

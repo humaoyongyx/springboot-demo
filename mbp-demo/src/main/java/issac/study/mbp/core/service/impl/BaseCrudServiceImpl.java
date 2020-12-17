@@ -1,8 +1,8 @@
 package issac.study.mbp.core.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import issac.study.mbp.core.model.BaseModel;
 import issac.study.mbp.core.service.BaseCrudService;
-import issac.study.mbp.model.base.BaseModel;
 
 /**
  * @author issac.hu

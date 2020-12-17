@@ -1,6 +1,6 @@
 package issac.study.mbp.req;
 
-import issac.study.mbp.req.base.BaseTreeReq;
+import issac.study.mbp.core.req.BaseTreeReq;
 import lombok.Data;
 
 /**

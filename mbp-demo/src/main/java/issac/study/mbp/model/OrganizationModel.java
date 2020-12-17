@@ -1,7 +1,7 @@
 package issac.study.mbp.model;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import issac.study.mbp.model.base.BaseTreeModel;
+import issac.study.mbp.core.model.BaseTreeModel;
 import lombok.Data;
 
 /**

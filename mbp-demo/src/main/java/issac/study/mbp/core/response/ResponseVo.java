@@ -1,4 +1,4 @@
-package issac.study.mbp.vo.response;
+package issac.study.mbp.core.response;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
