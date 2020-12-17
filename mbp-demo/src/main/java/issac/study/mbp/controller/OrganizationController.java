@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-
 /**
  * @author issac.hu
  */
@@ -27,20 +25,18 @@ public class OrganizationController {
     OrganizationService organizationService;
 
     @GetMapping("/save")
-    public OrganizationModel save(OrganizationModel organizationModel) {
-        organizationModel.setCreatedTime(new Date());
-        organizationService.save(organizationModel);
-        return organizationModel;
+    public Object save(OrganizationReq organizationReq) {
+        return organizationService.save(organizationReq);
     }
 
     @GetMapping("/save2")
-    public OrganizationVo save2(OrganizationReq organizationReq) {
+    public Object save2(OrganizationReq organizationReq) {
         return organizationService.saveGet(organizationReq);
     }
 
     @GetMapping("/update")
-    public void update(OrganizationModel organizationModel) {
-        organizationService.updateById(organizationModel);
+    public Object update(OrganizationReq organizationReq) {
+        return organizationService.update(organizationReq);
     }
 
     @GetMapping("/update2")

@@ -13,6 +13,14 @@ import issac.study.mbp.req.base.BaseReq;
 public interface GeneralCrudService<T extends GeneralModel, V> extends IService<T> {
 
     /**
+     * 保存实体,且不做任何验证
+     *
+     * @param entity
+     * @return
+     */
+    T saveEntity(T entity);
+
+    /**
      * 单条新增且获取保存后的值
      *
      * @param baseReq
@@ -20,6 +28,22 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
      */
     V saveGet(BaseReq baseReq);
 
+    /**
+     * 更新实体，不做任何验证
+     *
+     * @param entity
+     * @return
+     */
+    T updateEntity(T entity);
+
+    /**
+     * 更新实体，不做任何验证
+     *
+     * @param entity
+     * @param includeNullValue 是否包含null值
+     * @return
+     */
+    T updateEntity(T entity, boolean includeNullValue);
 
     /**
      * 单条更新且获取更新后的值

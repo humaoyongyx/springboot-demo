@@ -3,6 +3,10 @@ package issac.study.mbp.core.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.core.metadata.TableInfo;
+import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
+import com.baomidou.mybatisplus.core.toolkit.Assert;
+import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import issac.study.mbp.core.service.GeneralCrudService;
@@ -15,34 +19,57 @@ import issac.study.mbp.utils.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 /**
  * @author issac.hu
  */
-public abstract class AbstractGeneralCrudService<M extends BaseMapper<T>, T extends GeneralModel, V> extends ServiceImpl<M, T> implements GeneralCrudService<T, V> {
+public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralModel, V> extends ServiceImpl<M, T> implements GeneralCrudService<T, V> {
 
-    protected Class<T> getTClass() {
-        Class<T> tClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
-        return tClass;
+    /**
+     * 当前值对象的类
+     */
+    protected Class<V> voClass = currentVoClass();
+
+    /**
+     * 获取实体表名称
+     *
+     * @return
+     */
+    protected String currentTableName() {
+        TableInfo tableInfo = TableInfoHelper.getTableInfo(this.entityClass);
+        Assert.notNull(tableInfo, "error: can not execute. because can not find cache of TableInfo for entity!");
+        return tableInfo.getTableName();
     }
 
-    protected Class<V> getVClass() {
-        Class<V> vClass = (Class<V>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[2];
-        return vClass;
+    /**
+     * 获取值对象的类
+     *
+     * @return
+     */
+    protected Class<V> currentVoClass() {
+        return (Class<V>) ReflectionKit.getSuperClassGenericType(getClass(), 2);
+    }
+
+    @Override
+    public T saveEntity(T entity) {
+        entity.setId(null);
+        entity.setCreatedTime(new Date());
+        super.save(entity);
+        return entity;
     }
 
     @Override
     public V saveGet(BaseReq baseReq) {
         Objects.requireNonNull(baseReq, "保存的对象不能为空");
         baseReq.setId(null);
-        T model = ConvertUtils.convertObject(baseReq, getTClass());
+        T model = ConvertUtils.convertObject(baseReq, getEntityClass());
         model.setCreatedTime(new Date());
         model = saveGetCustom(model);
-        save(model);
-        return ConvertUtils.convertObject(model, getVClass());
+        super.save(model);
+        return ConvertUtils.convertObject(model, voClass);
     }
+
 
     /**
      * 子类可以继承复写
@@ -54,6 +81,24 @@ public abstract class AbstractGeneralCrudService<M extends BaseMapper<T>, T exte
         return model;
     }
 
+
+    @Override
+    public T updateEntity(T entity) {
+        return updateEntity(entity, false);
+    }
+
+    @Override
+    public T updateEntity(T entity, boolean includeNullValue) {
+        T db = getBaseMapper().selectById(entity.getId());
+        if (includeNullValue) {
+            ConvertUtils.copyWithNullProperties(entity, db);
+        } else {
+            ConvertUtils.copyNotNullProperties(entity, db);
+        }
+        getBaseMapper().updateById(db);
+        return db;
+    }
+
     @Override
     public V updateGet(BaseReq baseReq) {
         return updateGet(baseReq, false);
@@ -61,6 +106,12 @@ public abstract class AbstractGeneralCrudService<M extends BaseMapper<T>, T exte
 
     @Override
     public V updateGet(BaseReq baseReq, boolean includeNullValue) {
+        T db = checkReqForUpdate(baseReq, includeNullValue);
+        getBaseMapper().updateById(db);
+        return ConvertUtils.convertObject(db, voClass);
+    }
+
+    protected T checkReqForUpdate(BaseReq baseReq, boolean includeNullValue) {
         Objects.requireNonNull(baseReq, "更新的对象不能为空");
         if (baseReq.getId() == null) {
             throw BusinessRuntimeException.error("id不能为空");
@@ -74,8 +125,7 @@ public abstract class AbstractGeneralCrudService<M extends BaseMapper<T>, T exte
         } else {
             ConvertUtils.copyNotNullProperties(baseReq, db);
         }
-        getBaseMapper().updateById(db);
-        return ConvertUtils.convertObject(db, getVClass());
+        return db;
     }
 
     @Override
@@ -83,7 +133,7 @@ public abstract class AbstractGeneralCrudService<M extends BaseMapper<T>, T exte
         Page<T> page = new Page<>(basePageReq.getPage(), basePageReq.getSize());
         QueryWrapper<T> queryWrapper = new QueryWrapper<>();
         List<Field> reqFields = ReflectionUtils.getAllFields(baseReq);
-        List<Field> modelFields = ReflectionUtils.getAllFields(getTClass());
+        List<Field> modelFields = ReflectionUtils.getAllFields(getEntityClass());
         Map<String, Field> modelFieldsMap = new HashMap<>();
         for (Field modelField : modelFields) {
             modelFieldsMap.put(modelField.getName(), modelField);
@@ -138,7 +188,7 @@ public abstract class AbstractGeneralCrudService<M extends BaseMapper<T>, T exte
         page = page(page, queryWrapper);
         Page<V> newPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
         newPage.setOrders(page.getOrders());
-        newPage.setRecords(ConvertUtils.convertList(page.getRecords(), getVClass()));
+        newPage.setRecords(ConvertUtils.convertList(page.getRecords(), voClass));
         return newPage;
     }
 }
