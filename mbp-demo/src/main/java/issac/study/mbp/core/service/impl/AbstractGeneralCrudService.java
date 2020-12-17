@@ -115,19 +115,19 @@ public abstract class AbstractGeneralCrudService<M extends BaseMapper<T>, T exte
                 if (StringUtils.isBlank(item)) {
                     continue;
                 }
-                String[] fieldOrder = item.split(",");
-                if (fieldOrder.length < 2) {
+                String[] columnOrder = item.split(",");
+                if (columnOrder.length < 2) {
                     continue;
                 }
-                String field = fieldOrder[0];
-                String order = fieldOrder[1];
-                if (modelFieldsMap.get(field) == null) {
+                String column = columnOrder[0].trim();
+                String order = columnOrder[1].trim();
+                if (modelFieldsMap.get(column) == null) {
                     continue;
                 }
-                if (StringUtils.equalsIgnoreCase("asc", order.trim())) {
-                    orderItemList.add(OrderItem.asc(field));
-                } else if (StringUtils.equalsIgnoreCase("desc", order.trim())) {
-                    orderItemList.add(OrderItem.desc(field));
+                if (StringUtils.equalsIgnoreCase("asc", order)) {
+                    orderItemList.add(OrderItem.asc(column));
+                } else if (StringUtils.equalsIgnoreCase("desc", order)) {
+                    orderItemList.add(OrderItem.desc(column));
                 }
             }
         }

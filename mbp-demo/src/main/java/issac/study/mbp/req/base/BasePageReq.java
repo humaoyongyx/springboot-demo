@@ -9,6 +9,9 @@ import lombok.Data;
 public class BasePageReq {
     private int page = 1;
     private int size = 50;
-    private String order;
+    /**
+     * 默认id倒序
+     */
+    private String order = "id,desc";
 
 }
