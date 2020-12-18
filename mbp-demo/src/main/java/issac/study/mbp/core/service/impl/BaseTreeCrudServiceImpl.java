@@ -237,14 +237,19 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         Integer parentId = baseTreeReq.getParentId();
         queryWrapper.eq(baseTreeReq.getRootId() != null, "root_id", baseTreeReq.getRootId());
         List<T> childList = new ArrayList<>();
-        T parent = null;
         if (parentId != null) {
-            if (baseTreeReq.getDeeper() != null && baseTreeReq.getDeeper()) {
-                parent = this.getBaseMapper().selectById(parentId);
-                childList = getChildList(parent);
-            } else {
-                queryWrapper.eq("parent_id", parentId);
+            T parent = this.getBaseMapper().selectById(parentId);
+            if (parent == null) {
+                return new ArrayList<>();
             }
+            //获取所有子层
+            if (baseTreeReq.getDeeper() != null && baseTreeReq.getDeeper()) {
+                childList = getChildList(parent);
+                if (childList.isEmpty()) {
+                    return new ArrayList<>();
+                }
+            }
+            queryWrapper.eq("parent_id", parentId);
         }
         List<T> result;
         if (childList.isEmpty()) {
@@ -257,8 +262,7 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         }
         List<V> vResult = ConvertUtils.convertList(result, voClass);
         Map<Integer, List<V>> childMap = vResult.stream().filter(it -> it.getParentId() != null).collect(Collectors.groupingBy(it -> it.getParentId()));
-        List<V> rootList = getRootList(baseTreeReq, vResult, parent, childMap);
-        //parentId不为空，且deeper=false的时候，直接返回
+        List<V> rootList = getRootList(baseTreeReq, vResult, childMap);
         if (rootList == null) {
             Collections.sort(vResult, Comparator.comparingInt(BaseTreeVo::getSeq));
             return vResult;
@@ -268,17 +272,16 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
     }
 
 
-    private List<V> getRootList(BaseTreeReq baseTreeReq, List<V> vResult, T parent, Map<Integer, List<V>> childMap) {
-        if (baseTreeReq.getParentId() == null) {
+    private List<V> getRootList(BaseTreeReq baseTreeReq, List<V> vResult, Map<Integer, List<V>> childMap) {
+        Integer parentId = baseTreeReq.getParentId();
+        if (parentId == null) {
             return vResult.stream().filter(it -> it.getParentId() == null).collect(Collectors.toList());
         } else {
+            // deeper=true
             if (baseTreeReq.getDeeper() != null && baseTreeReq.getDeeper()) {
-                if (parent == null) {
-                    return new ArrayList<>();
-                } else {
-                    return childMap.get(parent.getId());
-                }
+                return childMap.get(parentId);
             } else {
+                //deeper=false parentId不为空的时候，此时说明有子层，只需要直接返回即可
                 return null;
             }
         }
