@@ -3,6 +3,7 @@ package issac.study.mbp.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import issac.study.mbp.core.annotation.PrintLog;
 import issac.study.mbp.core.annotation.RespVo;
 import issac.study.mbp.core.req.BasePageReq;
 import issac.study.mbp.req.OrganizationReq;
@@ -28,6 +29,7 @@ public class OrganizationController {
 
     @ApiOperation("保存")
     @PostMapping("/save")
+    @PrintLog
     public OrganizationVo save(@Valid OrganizationReq organizationReq) {
         organizationReq.setId(null);
         return organizationService.save(organizationReq);
@@ -35,6 +37,7 @@ public class OrganizationController {
 
     @ApiOperation("更新")
     @PutMapping("/{id}")
+    @PrintLog
     public OrganizationVo update(@PathVariable("id") Integer id, OrganizationReq organizationReq) {
         organizationReq.setId(id);
         return organizationService.update(organizationReq);
@@ -42,12 +45,14 @@ public class OrganizationController {
 
     @ApiOperation("删除")
     @DeleteMapping("/{id}")
+    @PrintLog
     public void delete(@PathVariable("id") Integer id, @RequestParam(value = "deeper", required = false, defaultValue = "false") Boolean deeper) {
         organizationService.deleteById(id, deeper);
     }
 
     @ApiOperation("id查询")
     @GetMapping("/get")
+    @PrintLog
     public OrganizationVo get(Integer id) {
         return organizationService.getById(id);
     }
@@ -55,12 +60,14 @@ public class OrganizationController {
 
     @ApiOperation("分页")
     @GetMapping("/page")
+    @PrintLog
     public Page<OrganizationVo> page(OrganizationReq organizationReq, BasePageReq basePageReq) {
         return organizationService.page(organizationReq, basePageReq);
     }
 
     @ApiOperation("树形查询")
     @GetMapping("/tree")
+    @PrintLog("树形查询")
     public List<OrganizationVo> tree(OrganizationReq organizationReq) {
         return organizationService.tree(organizationReq);
     }
