@@ -13,10 +13,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import java.lang.reflect.AnnotatedElement;
 
 /**
+ * 注解自动加返回体
+ *
  * @author issac
  */
 @ControllerAdvice
-public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
+public class GlobalResponseAdvice implements ResponseBodyAdvice<Object> {
 
     /**
      * Description: 判断是否支持返回自定义对象<br>

@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.InitBinder;
 @ControllerAdvice
 public class GlobalControllerAdvice {
 
-
+    /**
+     * 日期转换
+     *
+     * @param binder
+     */
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         GenericConversionService genericConversionService = (GenericConversionService) binder.getConversionService();

@@ -63,5 +63,4 @@ public class LogPrintAdvice {
         return requestAttributes.getRequest();
     }
 
-
 }
