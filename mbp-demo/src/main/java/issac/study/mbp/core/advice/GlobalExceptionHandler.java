@@ -1,4 +1,4 @@
-package issac.study.mbp.core.config;
+package issac.study.mbp.core.advice;
 
 import issac.study.mbp.core.exception.BusinessRuntimeException;
 import issac.study.mbp.core.exception.Error404RuntimeException;
@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -33,8 +34,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     public ResponseVo BindExceptionHandler(BindException e) {
+        FieldError fieldError = e.getBindingResult().getFieldError();
         LOGGER.error("global BindException:", e);
-        return ResponseVo.fail("参数类型错误！");
+        String result = "参数验证失败:名称[%s],值[%s],原因[%s]";
+        String msg = String.format(result, fieldError.getField(), fieldError.getRejectedValue(), fieldError.getDefaultMessage());
+        return ResponseVo.fail(msg);
     }
 
 

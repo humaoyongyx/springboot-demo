@@ -2,6 +2,7 @@ package issac.study.mbp.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import issac.study.mbp.core.annotation.RespVo;
 import issac.study.mbp.core.req.BasePageReq;
 import issac.study.mbp.mapper.OrganizationMapper;
 import issac.study.mbp.model.OrganizationModel;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -27,13 +29,14 @@ public class OrganizationController {
     OrganizationService organizationService;
 
     @GetMapping("/save")
-    public Object save(OrganizationReq organizationReq) {
+    public Object save(@Valid OrganizationReq organizationReq) {
         return organizationService.save(organizationReq);
     }
 
+    @RespVo
     @GetMapping("/save2")
-    public Object save2(OrganizationReq organizationReq) {
-        return organizationService.saveGet(organizationReq);
+    public void save2(OrganizationReq organizationReq) {
+        organizationService.saveGet(organizationReq);
     }
 
     @GetMapping("/update")
@@ -72,6 +75,7 @@ public class OrganizationController {
         return organizationModelIPage;
     }
 
+    @RespVo
     @GetMapping("/tree")
     public List<OrganizationVo> tree(OrganizationReq organizationReq) {
         List<OrganizationVo> tree = organizationService.tree(organizationReq);
