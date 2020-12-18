@@ -1,5 +1,6 @@
 package issac.study.mbp.core.vo;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -10,11 +11,12 @@ import java.util.Date;
 @Data
 public class GeneralVo {
 
+    @ApiModelProperty("主键id")
     private Integer id;
 
-    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty("创建时间")
     private Date createdTime;
 
-    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty("更新时间")
     private Date updatedTime;
 }

@@ -1,18 +1,16 @@
 package issac.study.mbp.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import issac.study.mbp.core.annotation.RespVo;
 import issac.study.mbp.core.req.BasePageReq;
-import issac.study.mbp.mapper.OrganizationMapper;
-import issac.study.mbp.model.OrganizationModel;
 import issac.study.mbp.req.OrganizationReq;
 import issac.study.mbp.service.OrganizationService;
 import issac.study.mbp.vo.OrganizationVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -21,65 +19,44 @@ import java.util.List;
 /**
  * @author issac.hu
  */
+@Api(tags = "组织管理模块")
 @RestController
-@RequestMapping("/org")
+@RespVo
+@RequestMapping("/api/org")
 public class OrganizationController {
 
     @Autowired
     OrganizationService organizationService;
 
+    @ApiOperation("保存")
     @GetMapping("/save")
-    public Object save(@Valid OrganizationReq organizationReq) {
+    public OrganizationVo save(@Valid OrganizationReq organizationReq) {
         return organizationService.save(organizationReq);
     }
 
-    @RespVo
-    @GetMapping("/save2")
-    public void save2(OrganizationReq organizationReq) {
-        organizationService.saveGet(organizationReq);
-    }
-
+    @ApiOperation("更新")
     @GetMapping("/update")
-    public Object update(OrganizationReq organizationReq) {
+    public OrganizationVo update(OrganizationReq organizationReq) {
         return organizationService.update(organizationReq);
     }
 
-    @GetMapping("/update2")
-    public OrganizationVo update2(OrganizationReq organizationReq, @RequestParam(defaultValue = "false", required = false) Boolean include) {
-        return organizationService.updateGet(organizationReq, include);
-    }
-
-
+    @ApiOperation("id查询")
     @GetMapping("/get")
-    public OrganizationModel get(Integer id) {
+    public OrganizationVo get(Integer id) {
         return organizationService.getById(id);
     }
 
+
+    @ApiOperation("分页")
     @GetMapping("/page")
-    public Page<OrganizationModel> page(OrganizationModel organizationModel, Page<OrganizationModel> pageReq) {
-        Page<OrganizationModel> page = organizationService.page(pageReq);
-        return page;
+    public Page<OrganizationVo> page(OrganizationReq organizationReq, BasePageReq basePageReq) {
+        return organizationService.page(organizationReq, basePageReq);
     }
 
-    @GetMapping("/page2")
-    public IPage<OrganizationVo> page2(OrganizationReq organizationReq, BasePageReq basePageReq) {
-        Page<OrganizationVo> page = organizationService.page(organizationReq, basePageReq);
-        return page;
-    }
-
-
-    @GetMapping("/cPage")
-    public IPage<OrganizationModel> cPage(OrganizationModel organizationModel, Page<OrganizationModel> pageReq) {
-        OrganizationMapper baseMapper = (OrganizationMapper) organizationService.getBaseMapper();
-        IPage<OrganizationModel> organizationModelIPage = baseMapper.selectPageVo(pageReq, organizationModel);
-        return organizationModelIPage;
-    }
-
-    @RespVo
+    @ApiOperation("树形查询")
     @GetMapping("/tree")
     public List<OrganizationVo> tree(OrganizationReq organizationReq) {
-        List<OrganizationVo> tree = organizationService.tree(organizationReq);
-        return tree;
+        return organizationService.tree(organizationReq);
     }
 
 }

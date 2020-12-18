@@ -19,7 +19,7 @@ import java.lang.reflect.AnnotatedElement;
 public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
 
     /**
-     * Description: 判断是否小视返回对象<br>
+     * Description: 判断是否支持返回自定义对象<br>
      *
      * @param returnType    返回类型
      * @param converterType 转换器
@@ -27,9 +27,15 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
      */
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        AnnotatedElement annotatedElement = returnType.getAnnotatedElement();
-        RespVo respVo = annotatedElement.getAnnotation(RespVo.class);
-        return respVo != null;
+        Class<?> declaringClass = returnType.getMethod().getDeclaringClass();
+        RespVo classRespVo = declaringClass.getAnnotation(RespVo.class);
+        if (classRespVo != null) {
+            return true;
+        } else {
+            AnnotatedElement annotatedElement = returnType.getAnnotatedElement();
+            RespVo respVo = annotatedElement.getAnnotation(RespVo.class);
+            return respVo != null;
+        }
     }
 
     /**
@@ -47,7 +53,9 @@ public class GlobalResponseHandler implements ResponseBodyAdvice<Object> {
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
                                   ServerHttpResponse response) {
-
+        if (body != null && body instanceof ResponseVo) {
+            return body;
+        }
         return ResponseVo.success(body);
     }
 }

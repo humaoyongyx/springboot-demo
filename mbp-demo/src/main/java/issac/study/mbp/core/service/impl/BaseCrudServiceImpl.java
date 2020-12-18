@@ -13,6 +13,7 @@ public class BaseCrudServiceImpl<M extends BaseMapper<T>, T extends BaseModel, V
     @Override
     protected T saveCustom(T model) {
         model.setCreatedBy(1);
+        model.setUpdatedBy(1);
         return model;
     }
 

@@ -60,7 +60,7 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
     }
 
     @Override
-    public V saveGet(BaseReq baseReq) {
+    public V save(BaseReq baseReq) {
         Objects.requireNonNull(baseReq, "保存的对象不能为空");
         baseReq.setId(null);
         T model = ConvertUtils.convertObject(baseReq, getEntityClass());
@@ -124,12 +124,12 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
     }
 
     @Override
-    public V updateGet(BaseReq baseReq) {
-        return updateGet(baseReq, false);
+    public V update(BaseReq baseReq) {
+        return update(baseReq, false);
     }
 
     @Override
-    public V updateGet(BaseReq baseReq, boolean includeNullValue) {
+    public V update(BaseReq baseReq, boolean includeNullValue) {
         T db = checkReqForUpdate(baseReq, includeNullValue);
         db = commonUpdate(db);
         getBaseMapper().updateById(db);
@@ -216,6 +216,12 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
         newPage.setOrders(page.getOrders());
         newPage.setRecords(ConvertUtils.convertList(page.getRecords(), voClass));
         return newPage;
+    }
+
+    @Override
+    public V getById(Integer id) {
+        T model = super.getById(id);
+        return ConvertUtils.convertObject(model, voClass);
     }
 
 

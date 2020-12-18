@@ -27,7 +27,7 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
      * @param baseReq
      * @return
      */
-    V saveGet(BaseReq baseReq);
+    V save(BaseReq baseReq);
 
     /**
      * 更新实体，不做任何验证
@@ -52,7 +52,7 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
      * @param baseReq
      * @return
      */
-    V updateGet(BaseReq baseReq);
+    V update(BaseReq baseReq);
 
     /**
      * 单条更新且获取更新后的值
@@ -61,7 +61,7 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
      * @param includeNullValue 是否包含null值
      * @return
      */
-    V updateGet(BaseReq baseReq, boolean includeNullValue);
+    V update(BaseReq baseReq, boolean includeNullValue);
 
     /**
      * 分页
@@ -71,4 +71,12 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
      * @return
      */
     Page<V> page(BaseReq baseReq, BasePageReq basePageReq);
+
+    /**
+     * 通过id获取值
+     *
+     * @param id
+     * @return
+     */
+    V getById(Integer id);
 }

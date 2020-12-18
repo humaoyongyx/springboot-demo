@@ -78,7 +78,7 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         //清除此值，防止被copy到db对象中
         baseTreeReq.setParentId(null);
         if (parentId == null) {
-            return super.updateGet(baseTreeReq, includeNullValue);
+            return super.update(baseTreeReq, includeNullValue);
         } else {
             T dbForUpdate = checkReqForUpdate(baseTreeReq, includeNullValue);
             //parentId 相同只需更改内容
