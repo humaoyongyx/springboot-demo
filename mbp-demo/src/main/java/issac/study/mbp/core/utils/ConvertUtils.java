@@ -212,22 +212,49 @@ public class ConvertUtils {
      *
      * @param object
      * @param disableCircularReference 是否开启循环引用
-     * @param format                   是否格式化
+     * @param formatOutput             是否格式化
      * @return
      */
-    public static String toJsonString(Object object, boolean disableCircularReference, boolean format) {
+    public static String toJsonString(Object object, boolean disableCircularReference, boolean formatOutput) {
+        return toJsonString(object, disableCircularReference, formatOutput, false);
+    }
+
+    /**
+     * 转换为json字符串
+     *
+     * @param object
+     * @param disableCircularReference
+     * @param formatOutput
+     * @param dateFormat
+     * @return
+     */
+    public static String toJsonString(Object object, boolean disableCircularReference, boolean formatOutput, boolean dateFormat) {
         List<SerializerFeature> serializerFeatureList = new ArrayList<>();
         if (disableCircularReference) {
             serializerFeatureList.add(SerializerFeature.DisableCircularReferenceDetect);
         }
-        if (format) {
+        if (formatOutput) {
             serializerFeatureList.add(SerializerFeature.PrettyFormat);
         }
-        if (serializerFeatureList.isEmpty()) {
-            return JSON.toJSONString(object);
-        } else {
-            return JSON.toJSONString(object, serializerFeatureList.toArray(new SerializerFeature[]{}));
+        if (dateFormat) {
+            serializerFeatureList.add(SerializerFeature.WriteDateUseDateFormat);
         }
+        if (serializerFeatureList.isEmpty()) {
+            return toJsonString(object);
+        } else {
+            return toJsonString(object, serializerFeatureList.toArray(new SerializerFeature[]{}));
+        }
+    }
+
+    /**
+     * 使用fastjson
+     *
+     * @param object
+     * @param serializerFeatures
+     * @return
+     */
+    private static String toJsonString(Object object, SerializerFeature... serializerFeatures) {
+        return JSON.toJSONString(object, serializerFeatures);
     }
 
 

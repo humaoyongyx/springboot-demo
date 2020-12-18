@@ -28,23 +28,34 @@ public class LogPrintAdvice {
         long beginTime = System.currentTimeMillis();
         Object[] args = joinPoint.getArgs();
         HttpServletRequest request = getHttpServletRequest();
-        log.info("request: {} {} ,args : {} ,ip : {}", request.getMethod(), request.getRequestURI(), printLog.showArgs() ? ConvertUtils.toJsonString(args) : "", RequestIpUtils.getIpAddress(request));
+        log.info("request: {} {} ,args : {} ,ip : {}", request.getMethod(), request.getRequestURI(), getArgs(printLog, args), RequestIpUtils.getIpAddress(request));
         Object result = null;
         try {
             result = joinPoint.proceed();
-            return result;
         } catch (Exception e) {
             throw e;
         } finally {
             long endTime = System.currentTimeMillis();
             long costTime = endTime - beginTime;
-            String resultStr = "";
-            if (printLog.showResult()) {
-                resultStr = result == null ? "" : ConvertUtils.toJsonString(result, true);
+            if (costTime > printLog.slowMillis()) {
+                log.warn("response:slow {} {} ,args : {} ,cost : {} ,result : {}", request.getMethod(), request.getRequestURI(), getArgs(printLog, args), costTime + "ms", getResultStr(printLog, result));
+            } else {
+                log.info("response: {} {} ,args : {} ,cost : {} ,result : {}", request.getMethod(), request.getRequestURI(), getArgs(printLog, args), costTime + "ms", getResultStr(printLog, result));
             }
-            log.info("response: {} {} ,args : {} ,cost : {} ,result : {}", request.getMethod(), request.getRequestURI(), printLog.showArgs() ? ConvertUtils.toJsonString(args) : "", costTime + "ms", resultStr);
         }
+        return result;
+    }
 
+    private String getResultStr(PrintLog printLog, Object result) {
+        String resultStr = "";
+        if (printLog.showResult() && result != null) {
+            resultStr = "\n" + ConvertUtils.toJsonString(result, true, true, true);
+        }
+        return resultStr;
+    }
+
+    private String getArgs(PrintLog printLog, Object[] args) {
+        return printLog.showArgs() ? ConvertUtils.toJsonString(args, true, false, true) : "";
     }
 
     private HttpServletRequest getHttpServletRequest() {

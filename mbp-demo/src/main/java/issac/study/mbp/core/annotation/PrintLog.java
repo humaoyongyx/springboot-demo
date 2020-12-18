@@ -31,4 +31,11 @@ public @interface PrintLog {
      * @return
      */
     boolean showResult() default false;
+
+    /**
+     * 超过这个时长，将打印警告消息
+     *
+     * @return
+     */
+    long slowMillis() default 200L;
 }
