@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.core.toolkit.Assert;
 import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import issac.study.mbp.core.annotation.TimeBegin;
+import issac.study.mbp.core.annotation.TimeEnd;
 import issac.study.mbp.core.exception.BusinessRuntimeException;
 import issac.study.mbp.core.model.GeneralModel;
 import issac.study.mbp.core.req.BasePageReq;
@@ -53,7 +55,6 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
 
     @Override
     public T saveModel(T model) {
-        model.setId(null);
         model = commonSave(model);
         super.save(model);
         return model;
@@ -62,7 +63,6 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
     @Override
     public V save(BaseReq baseReq) {
         Objects.requireNonNull(baseReq, "保存的对象不能为空");
-        baseReq.setId(null);
         T model = ConvertUtils.convertObject(baseReq, getEntityClass());
         model = commonSave(model);
         super.save(model);
@@ -157,49 +157,26 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
     public Page<V> page(BaseReq baseReq, BasePageReq basePageReq) {
         Page<T> page = new Page<>(basePageReq.getPage(), basePageReq.getSize());
         QueryWrapper<T> queryWrapper = new QueryWrapper<>();
-        List<Field> reqFields = ReflectionUtils.getAllFields(baseReq);
-        List<Field> modelFields = ReflectionUtils.getAllFields(getEntityClass());
-        Map<String, Field> modelFieldsMap = new HashMap<>();
-        for (Field modelField : modelFields) {
-            modelFieldsMap.put(modelField.getName(), modelField);
-        }
-        for (Field reqField : reqFields) {
-            String fieldName = reqField.getName();
-            if (modelFieldsMap.get(fieldName) == null) {
-                continue;
-            }
-            reqField.setAccessible(true);
-            String column = com.baomidou.mybatisplus.core.toolkit.StringUtils.camelToUnderline(fieldName);
-            try {
-                Object val = reqField.get(baseReq);
-                if (val != null) {
-                    if (val instanceof String) {
-                        queryWrapper.like(StringUtils.isNotBlank((CharSequence) val), column, val);
-                    } else if (val instanceof Integer || val instanceof Long || val instanceof Boolean) {
-                        queryWrapper.eq(val != null, column, val);
-                    }
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        handleQueryWrapper(baseReq, queryWrapper, getEntityClass());
         String orderStr = basePageReq.getOrder();
         List<OrderItem> orderItemList = new ArrayList<>();
+        Map<String, Field> modelFieldsMap = getFieldMap(getEntityClass());
         if (StringUtils.isNotBlank(orderStr)) {
             String[] items = orderStr.split(";");
             for (String item : items) {
                 if (StringUtils.isBlank(item)) {
                     continue;
                 }
-                String[] columnOrder = item.split(",");
-                if (columnOrder.length < 2) {
+                String[] fieldOrder = item.split(",");
+                if (fieldOrder.length < 2) {
                     continue;
                 }
-                String column = columnOrder[0].trim();
-                String order = columnOrder[1].trim();
-                if (modelFieldsMap.get(column) == null) {
+                String fieldName = fieldOrder[0].trim();
+                String order = fieldOrder[1].trim();
+                if (modelFieldsMap.get(fieldName) == null) {
                     continue;
                 }
+                String column = getColumn(fieldName);
                 if (StringUtils.equalsIgnoreCase("asc", order)) {
                     orderItemList.add(OrderItem.asc(column));
                 } else if (StringUtils.equalsIgnoreCase("desc", order)) {
@@ -216,6 +193,64 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
         newPage.setOrders(page.getOrders());
         newPage.setRecords(ConvertUtils.convertList(page.getRecords(), voClass));
         return newPage;
+    }
+
+    private String getColumn(String fieldName) {
+        return com.baomidou.mybatisplus.core.toolkit.StringUtils.camelToUnderline(fieldName);
+    }
+
+    public void handleQueryWrapper(BaseReq baseReq, QueryWrapper<T> queryWrapper, Class modelClass, String... excludeFields) {
+        List<Field> reqFields = ReflectionUtils.getAllFields(baseReq);
+        Map<String, Field> modelFieldsMap = getFieldMap(modelClass);
+        for (Field reqField : reqFields) {
+            reqField.setAccessible(true);
+            String fieldName = reqField.getName();
+            if (excludeFields != null && Arrays.asList(excludeFields).contains(fieldName)) {
+                continue;
+            }
+            if (modelFieldsMap.get(fieldName) == null && !checkFieldAnnotation(reqField)) {
+                continue;
+            }
+            String column = getColumn(fieldName);
+            try {
+                Object val = reqField.get(baseReq);
+                if (val != null) {
+                    if (val instanceof String) {
+                        queryWrapper.like(StringUtils.isNotBlank((CharSequence) val), column, val);
+                    } else if (val instanceof Integer || val instanceof Long || val instanceof Boolean) {
+                        queryWrapper.eq(val != null, column, val);
+                    } else if (val instanceof Date) {
+                        TimeBegin timeBegin = reqField.getAnnotation(TimeBegin.class);
+                        TimeEnd timeEnd = reqField.getAnnotation(TimeEnd.class);
+                        if (timeBegin != null && StringUtils.isNotBlank(timeBegin.value())) {
+                            queryWrapper.ge(getColumn(timeBegin.value()), val);
+                        } else if (timeEnd != null && StringUtils.isNotBlank(timeEnd.value())) {
+                            queryWrapper.lt(getColumn(timeEnd.value()), val);
+                        }
+                    }
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private boolean checkFieldAnnotation(Field reqField) {
+        TimeBegin timeBegin = reqField.getAnnotation(TimeBegin.class);
+        TimeEnd timeEnd = reqField.getAnnotation(TimeEnd.class);
+        if (timeBegin != null || timeEnd != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public Map<String, Field> getFieldMap(Class clazz) {
+        List<Field> modelFields = ReflectionUtils.getAllFields(clazz);
+        Map<String, Field> modelFieldsMap = new HashMap<>();
+        for (Field modelField : modelFields) {
+            modelFieldsMap.put(modelField.getName(), modelField);
+        }
+        return modelFieldsMap;
     }
 
     @Override

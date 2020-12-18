@@ -1,6 +1,7 @@
 package issac.study.mbp.core.service;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import issac.study.mbp.core.model.BaseTreeModel;
 import issac.study.mbp.core.req.BaseTreeReq;
 
@@ -69,4 +70,11 @@ public interface BaseTreeCrudService<T extends BaseTreeModel, V> extends BaseCru
      * @return
      */
     List<V> tree(BaseTreeReq baseTreeReq);
+
+    /**
+     * @param baseTreeReq
+     * @param queryWrapper 查询条件
+     * @return
+     */
+    List<V> tree(BaseTreeReq baseTreeReq, QueryWrapper<T> queryWrapper);
 }

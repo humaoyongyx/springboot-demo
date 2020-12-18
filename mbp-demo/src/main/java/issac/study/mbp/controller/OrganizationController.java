@@ -9,9 +9,7 @@ import issac.study.mbp.req.OrganizationReq;
 import issac.study.mbp.service.OrganizationService;
 import issac.study.mbp.vo.OrganizationVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -29,15 +27,23 @@ public class OrganizationController {
     OrganizationService organizationService;
 
     @ApiOperation("保存")
-    @GetMapping("/save")
+    @PostMapping("/save")
     public OrganizationVo save(@Valid OrganizationReq organizationReq) {
+        organizationReq.setId(null);
         return organizationService.save(organizationReq);
     }
 
     @ApiOperation("更新")
-    @GetMapping("/update")
-    public OrganizationVo update(OrganizationReq organizationReq) {
+    @PutMapping("/{id}")
+    public OrganizationVo update(@PathVariable("id") Integer id, OrganizationReq organizationReq) {
+        organizationReq.setId(id);
         return organizationService.update(organizationReq);
+    }
+
+    @ApiOperation("删除")
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable("id") Integer id, @RequestParam(value = "deeper", required = false, defaultValue = "false") Boolean deeper) {
+        organizationService.deleteById(id, deeper);
     }
 
     @ApiOperation("id查询")

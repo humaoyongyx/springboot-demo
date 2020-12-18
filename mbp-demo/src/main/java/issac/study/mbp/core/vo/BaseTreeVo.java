@@ -21,6 +21,9 @@ public class BaseTreeVo extends BaseVo {
     @ApiModelProperty("节点路径")
     private String idPath;
 
+    @ApiModelProperty("节点深度")
+    private Integer depth;
+
     @ApiModelProperty("是否是叶子节点")
     private Boolean leaf;
 

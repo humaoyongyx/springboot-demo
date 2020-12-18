@@ -14,6 +14,7 @@ public class BaseTreeReq extends BaseReq {
 
     @ApiModelProperty("父节点id")
     private Integer parentId;
+
     /**
      * 是否递归操作
      */

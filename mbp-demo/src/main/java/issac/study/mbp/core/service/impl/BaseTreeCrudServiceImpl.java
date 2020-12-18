@@ -33,7 +33,6 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         removeNotNeedValue(baseTreeReq);
         T baseTreeEntity = ConvertUtils.convertObject(baseTreeReq, entityClass);
         Integer parentId = baseTreeEntity.getParentId();
-        baseTreeEntity.setId(null);
         T result;
         if (parentId == null) {
             baseTreeEntity.setDepth(ROOT_DEPTH);
@@ -229,6 +228,12 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
     @Override
     public List<V> tree(BaseTreeReq baseTreeReq) {
         QueryWrapper<T> queryWrapper = new QueryWrapper<>();
+        handleQueryWrapper(baseTreeReq, queryWrapper, getEntityClass(), "rootId", "parentId");
+        return tree(baseTreeReq, queryWrapper);
+    }
+
+    @Override
+    public List<V> tree(BaseTreeReq baseTreeReq, QueryWrapper<T> queryWrapper) {
         Integer parentId = baseTreeReq.getParentId();
         queryWrapper.eq(baseTreeReq.getRootId() != null, "root_id", baseTreeReq.getRootId());
         List<T> childList = new ArrayList<>();
@@ -262,6 +267,7 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         return rootList;
     }
 
+
     private List<V> getRootList(BaseTreeReq baseTreeReq, List<V> vResult, T parent, Map<Integer, List<V>> childMap) {
         if (baseTreeReq.getParentId() == null) {
             return vResult.stream().filter(it -> it.getParentId() == null).collect(Collectors.toList());
@@ -282,6 +288,10 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         for (V root : rootList) {
             if (!root.getLeaf()) {
                 List<V> childItems = childMap.get(root.getId());
+                //出现这种情况，要么就是数据是手动修改的，要么是带有查询条件，破坏了树形结构
+                if (childItems == null) {
+                    continue;
+                }
                 Collections.sort(childItems, Comparator.comparingInt(BaseTreeVo::getSeq));
                 root.setChildren(childItems);
                 setChildItem(childItems, childMap);
