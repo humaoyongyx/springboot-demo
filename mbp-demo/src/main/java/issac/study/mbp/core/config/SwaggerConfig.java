@@ -34,7 +34,7 @@ public class SwaggerConfig {
                 .groupName("api v1")
                 .select()
                 //这里指定Controller扫描包路径
-                .apis(RequestHandlerSelectors.basePackage("issac.study.mbp.controller"))
+                .apis(RequestHandlerSelectors.any())
                 .paths(path -> path != null && (path.startsWith("/api/")))
                 .build();
 

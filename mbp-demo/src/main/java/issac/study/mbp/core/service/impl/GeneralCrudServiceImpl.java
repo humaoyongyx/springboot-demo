@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import issac.study.mbp.core.annotation.TimeBegin;
 import issac.study.mbp.core.annotation.TimeEnd;
 import issac.study.mbp.core.exception.BusinessRuntimeException;
+import issac.study.mbp.core.exception.ErrorCode;
 import issac.study.mbp.core.model.GeneralModel;
 import issac.study.mbp.core.req.BasePageReq;
 import issac.study.mbp.core.req.BaseReq;
@@ -19,7 +20,13 @@ import issac.study.mbp.core.service.GeneralCrudService;
 import issac.study.mbp.core.utils.ConvertUtils;
 import issac.study.mbp.core.utils.ReflectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -27,6 +34,9 @@ import java.util.*;
  * @author issac.hu
  */
 public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralModel, V> extends ServiceImpl<M, T> implements GeneralCrudService<T, V> {
+
+    @Autowired
+    Validator validator;
 
     /**
      * 当前值对象的类
@@ -60,6 +70,7 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
         return model;
     }
 
+    @CachePut(value = "mbp:cache", key = "targetClass+''+#result.id", condition = "target.cacheable()")
     @Override
     public V save(BaseReq baseReq) {
         Objects.requireNonNull(baseReq, "保存的对象不能为空");
@@ -128,6 +139,7 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
         return update(baseReq, false);
     }
 
+    @CachePut(value = "mbp:cache", key = "targetClass+''+#result.id", condition = "target.cacheable()")
     @Override
     public V update(BaseReq baseReq, boolean includeNullValue) {
         T db = checkReqForUpdate(baseReq, includeNullValue);
@@ -253,11 +265,44 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
         return modelFieldsMap;
     }
 
+    @Cacheable(value = "mbp:cache", key = "targetClass+''+#id", condition = "target.cacheable()")
     @Override
     public V getById(Integer id) {
         T model = super.getById(id);
         return ConvertUtils.convertObject(model, voClass);
     }
 
+    @CacheEvict(value = "mbp:cache", key = "targetClass+''+#id", condition = "target.cacheable()")
+    @Override
+    public Integer deleteById(Integer id) {
+        if (super.removeById(id)) {
+            return id;
+        }
+        return null;
+    }
 
+    @Override
+    public void validateReq(Object req) {
+        validateReq(req, true);
+    }
+
+    @Override
+    public void validateReq(Object req, boolean checkNone) {
+        if (checkNone) {
+            if (req == null) {
+                throw BusinessRuntimeException.errorCode(ErrorCode.COMMON_PARAM_NULL_ERROR);
+            }
+        }
+        Set<ConstraintViolation<Object>> validate = validator.validate(req);
+        if (!validate.isEmpty()) {
+            ConstraintViolation<Object> next = validate.iterator().next();
+            throw BusinessRuntimeException.error(next.getPropertyPath() + " " + next.getMessage());
+        }
+    }
+
+
+    @Override
+    public boolean cacheable() {
+        return false;
+    }
 }

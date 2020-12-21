@@ -7,6 +7,14 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8 # 设置返回json的日期格式
+  redis:
+    host: 192.168.99.3
+    port: 6379
+    timeout: 10000
+    maxIdle: 200
+    maxTotal: 500
+    maxWaitMillis: 1000
+    testOnBorrow: true
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql日志

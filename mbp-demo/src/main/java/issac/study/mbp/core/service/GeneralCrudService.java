@@ -11,7 +11,7 @@ import issac.study.mbp.core.req.BaseReq;
 /**
  * @author issac.hu
  */
-public interface GeneralCrudService<T extends GeneralModel, V> extends IService<T> {
+public interface GeneralCrudService<T extends GeneralModel, V> extends IService<T>, CacheableService {
 
     /**
      * 保存实体,且不做任何验证
@@ -79,4 +79,27 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
      * @return
      */
     V getById(Integer id);
+
+    /**
+     * 通过id删除
+     *
+     * @param id
+     * @return
+     */
+    Integer deleteById(Integer id);
+
+    /**
+     * 验证请求参数 @valid
+     *
+     * @param req
+     */
+    void validateReq(Object req);
+
+    /**
+     * 验证请求参数 @valid
+     *
+     * @param req
+     * @param checkNone 是否检查参数为null
+     */
+    void validateReq(Object req, boolean checkNone);
 }

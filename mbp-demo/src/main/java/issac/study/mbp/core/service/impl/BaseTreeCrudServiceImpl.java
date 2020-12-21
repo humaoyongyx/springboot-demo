@@ -158,7 +158,6 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         return parent;
     }
 
-
     @Override
     public Integer deleteById(Integer id) {
         T db = this.getBaseMapper().selectById(id);
@@ -166,7 +165,7 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
             if (!db.getLeaf()) {
                 throw BusinessRuntimeException.error("不能删除有子节点的数据");
             }
-            this.getBaseMapper().deleteById(id);
+            super.deleteById(id);
             resetParentForDel(db);
             return id;
         }
@@ -178,7 +177,7 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         if (deeper) {
             T db = this.getBaseMapper().selectById(id);
             if (db != null) {
-                this.getBaseMapper().deleteById(id);
+                super.deleteById(id);
                 resetParentForDel(db);
                 if (!db.getLeaf()) {
                     String nodeIdPath = db.getIdPath() + ID_PATH_DELIMITER + db.getId() + LIKE_SUFFIX;
@@ -223,7 +222,6 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         }
         return new ArrayList<>();
     }
-
 
     @Override
     public List<V> tree(BaseTreeReq baseTreeReq) {
@@ -270,7 +268,6 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
         setChildItem(rootList, childMap);
         return rootList;
     }
-
 
     private List<V> getRootList(BaseTreeReq baseTreeReq, List<V> vResult, Map<Integer, List<V>> childMap) {
         Integer parentId = baseTreeReq.getParentId();
