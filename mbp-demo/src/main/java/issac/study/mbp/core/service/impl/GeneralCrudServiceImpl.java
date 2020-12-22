@@ -167,9 +167,20 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
 
     @Override
     public Page<V> page(BaseReq baseReq, BasePageReq basePageReq) {
-        Page<T> page = new Page<>(basePageReq.getPage(), basePageReq.getSize());
+
         QueryWrapper<T> queryWrapper = new QueryWrapper<>();
         handleQueryWrapper(baseReq, queryWrapper, getEntityClass());
+
+        Page<T> page = convertPageReq(basePageReq);
+        page = page(page, queryWrapper);
+        Page<V> newPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
+        newPage.setOrders(page.getOrders());
+        newPage.setRecords(ConvertUtils.convertList(page.getRecords(), voClass));
+        return newPage;
+    }
+
+    public Page<T> convertPageReq(BasePageReq basePageReq) {
+        Page<T> page = new Page<>(basePageReq.getPage(), basePageReq.getSize());
         String orderStr = basePageReq.getOrder();
         List<OrderItem> orderItemList = new ArrayList<>();
         Map<String, Field> modelFieldsMap = getFieldMap(getEntityClass());
@@ -200,11 +211,7 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
         if (!orderItemList.isEmpty()) {
             page.setOrders(orderItemList);
         }
-        page = page(page, queryWrapper);
-        Page<V> newPage = new Page<>(page.getCurrent(), page.getSize(), page.getTotal());
-        newPage.setOrders(page.getOrders());
-        newPage.setRecords(ConvertUtils.convertList(page.getRecords(), voClass));
-        return newPage;
+        return page;
     }
 
     private String getColumn(String fieldName) {
