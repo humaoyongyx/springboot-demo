@@ -18,5 +18,7 @@ spring:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql日志
+    auto-mapping-behavior: full # 开启自动映射
+    map-underscore-to-camel-case: true # 下划线转驼峰
   type-aliases-package: issac.study.mbp.**.model #扫描表映射的类，默认是自动加下划线
   mapper-locations: classpath*:issac.study.mbp.**.mapper #classpath* 表示包括jar包内的类路径

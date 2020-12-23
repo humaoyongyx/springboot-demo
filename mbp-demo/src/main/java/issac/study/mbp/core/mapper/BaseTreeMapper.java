@@ -1,13 +1,12 @@
 package issac.study.mbp.core.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import issac.study.mbp.core.model.BaseTreeModel;
 import org.apache.ibatis.annotations.Param;
 
 /**
  * @author issac.hu
  */
-public interface BaseTreeMapper<T extends BaseTreeModel> extends BaseMapper<T> {
+public interface BaseTreeMapper<T extends BaseTreeModel> extends GeneralMapper<T> {
 
     /**
      * 查询父类子项的数量
