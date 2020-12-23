@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="issac.study.mbp.mapper.SchoolMapper">
+
+    <resultMap id="schoolCrossModel" type="issac.study.mbp.model.cross.SchoolCrossModel">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updatedTime" column="updated_time"/>
+        <collection property="classList" columnPrefix="c_" ofType="issac.study.mbp.model.cross.ClassCrossModel">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+            <collection property="studentList" columnPrefix="stu_" ofType="issac.study.mbp.model.StudentModel">
+                <id property="id" column="id"/>
+                <result property="name" column="name"/>
+            </collection>
+        </collection>
+
+    </resultMap>
+
+
+    <select id="findCrossById" resultMap="schoolCrossModel">
+	SELECT
+		sch.*,
+		c.id c_id,
+		c.`name` c_name,
+		stu.id c_stu_id,
+		stu.`name` c_stu_name
+	FROM
+		`school` sch
+		LEFT JOIN `class` c ON sch.id = c.school_id
+		LEFT JOIN `student` stu ON c.id = stu.class_id
+    where
+        sch.id=#{id}
+    </select>
+</mapper>
