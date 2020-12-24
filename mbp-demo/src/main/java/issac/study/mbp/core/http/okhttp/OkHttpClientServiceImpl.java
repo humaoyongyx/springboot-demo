@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class OkHttpClientServiceImpl implements HttpClientService {
 
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     private static final MediaType MEDIA_TYPE_URL = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
-
+    private static final MediaType MULTIPART_FORM_DATA = MediaType.parse("multipart/form-data; charset=utf-8");
     private OkHttpClient okHttpClient;
 
     public OkHttpClientServiceImpl() {
@@ -75,23 +76,11 @@ public class OkHttpClientServiceImpl implements HttpClientService {
     @Override
     public String execute(HttpMethod httpMethod, String url, Map<String, Object> params, Map<String, String> headers, String jsonBody) {
         Objects.requireNonNull(httpMethod);
-        Objects.requireNonNull(url);
-        url = url.trim();
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            throw new RuntimeException("非法的url参数");
-        }
+        url = checkUrl(url);
         Request.Builder requestBuilder = new Request.Builder();
         RequestBody requestBody = null;
         //设置头信息
-        if (headers != null && !headers.isEmpty()) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
-                    requestBuilder.addHeader(key, value);
-                }
-            }
-        }
+        setHeader(headers, requestBuilder);
         if (httpMethod == HttpMethod.GET || httpMethod == HttpMethod.DELETE) {
             HttpUrl.Builder urlBuilder = convertParamMapToHttpUrl(url, params);
             requestBuilder.url(urlBuilder.build());
@@ -113,20 +102,41 @@ public class OkHttpClientServiceImpl implements HttpClientService {
         }
 
         requestBuilder.method(httpMethod.name(), requestBody);
+        long begin = System.currentTimeMillis();
+        Request request = requestBuilder.build();
         try {
-            long begin = System.currentTimeMillis();
-            Request request = requestBuilder.build();
-            String result = okHttpClient.newCall(request).execute().body().string();
+            return okHttpClient.newCall(request).execute().body().string();
+        } catch (IOException e) {
+            log.error("okHttpClient execute error:", e);
+        } finally {
             long end = System.currentTimeMillis();
             long cost = end - begin;
             if (cost > SLOW_TIME) {
                 log.warn("slow request: {} , cost: {}ms ", request, cost);
             }
-            return result;
-        } catch (IOException e) {
-            log.error("http request error:", e);
         }
         return null;
+    }
+
+    private void setHeader(Map<String, String> headers, Request.Builder requestBuilder) {
+        if (headers != null && !headers.isEmpty()) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
+                    requestBuilder.addHeader(key, value);
+                }
+            }
+        }
+    }
+
+    private String checkUrl(String url) {
+        Objects.requireNonNull(url);
+        url = url.trim();
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            throw new RuntimeException("非法的url参数");
+        }
+        return url;
     }
 
     private RequestBody emptyRequestBody() {
@@ -166,6 +176,34 @@ public class OkHttpClientServiceImpl implements HttpClientService {
             }
         }
         return urlBuilder;
+    }
+
+    @Override
+    public boolean uploadFiles(String url, Map<String, Object> params, Map<String, String> headers, String formFileName, File... files) {
+        url = checkUrl(url);
+        HttpUrl httpUrl = convertParamMapToHttpUrl(url, params).build();
+        Request.Builder requestBuilder = new Request.Builder();
+        requestBuilder.url(httpUrl);
+        setHeader(headers, requestBuilder);
+        MultipartBody.Builder multiPartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        for (File file : files) {
+            multiPartBodyBuilder.addFormDataPart(formFileName, file.getName(), RequestBody.create(MULTIPART_FORM_DATA, file));
+        }
+        long begin = System.currentTimeMillis();
+        Request request = requestBuilder.post(multiPartBodyBuilder.build()).build();
+        try {
+            okHttpClient.newCall(request).execute();
+            return true;
+        } catch (IOException e) {
+            log.error("okHttpClient uploadFiles error:", e);
+        } finally {
+            long end = System.currentTimeMillis();
+            long cost = end - begin;
+            if (cost > SLOW_TIME) {
+                log.warn("slow request: {} , cost: {}ms ", request, cost);
+            }
+        }
+        return false;
     }
 
 }

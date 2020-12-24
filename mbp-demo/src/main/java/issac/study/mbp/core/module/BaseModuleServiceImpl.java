@@ -5,7 +5,7 @@ import issac.study.mbp.core.exception.BusinessRuntimeException;
 import issac.study.mbp.core.exception.Error404RuntimeException;
 import issac.study.mbp.core.req.BasePageReq;
 import issac.study.mbp.core.req.BaseReq;
-import issac.study.mbp.core.response.ResponseVo;
+import issac.study.mbp.core.response.ResponseResult;
 import issac.study.mbp.core.service.BaseCrudService;
 import issac.study.mbp.core.utils.ConvertUtils;
 import org.slf4j.Logger;
@@ -42,39 +42,39 @@ public class BaseModuleServiceImpl implements BaseModuleService, ApplicationCont
     }
 
     @Override
-    public ResponseVo save(String moduleId, Map<String, Object> param) {
+    public ResponseResult save(String moduleId, Map<String, Object> param) {
         BaseModule module = getModule(moduleId);
         BaseReq baseReq = validateAndGet(param, module.getReqClass());
         BaseCrudService baseCrudService = module.getBaseCrudService();
         baseCrudService.validateReq(baseReq);
-        return ResponseVo.success(baseCrudService.save(baseReq));
+        return ResponseResult.success(baseCrudService.save(baseReq));
     }
 
     @Override
-    public ResponseVo update(String moduleId, Map<String, Object> param, boolean withNull) {
+    public ResponseResult update(String moduleId, Map<String, Object> param, boolean withNull) {
         BaseModule module = getModule(moduleId);
         BaseReq baseReq = validateAndGet(param, module.getReqClass());
         BaseCrudService baseCrudService = module.getBaseCrudService();
-        return ResponseVo.success(baseCrudService.update(baseReq, withNull));
+        return ResponseResult.success(baseCrudService.update(baseReq, withNull));
     }
 
     @Override
-    public ResponseVo delete(String moduleId, Integer id) {
+    public ResponseResult delete(String moduleId, Integer id) {
         BaseModule module = getModule(moduleId);
         module.getBaseCrudService().deleteById(id);
-        return ResponseVo.success();
+        return ResponseResult.success();
     }
 
     @Override
-    public ResponseVo getById(String moduleId, Integer id) {
+    public ResponseResult getById(String moduleId, Integer id) {
         BaseModule module = getModule(moduleId);
-        return ResponseVo.success(module.getBaseCrudService().getById(id));
+        return ResponseResult.success(module.getBaseCrudService().getById(id));
     }
 
     @Override
-    public ResponseVo page(String moduleId, BasePageReq basePageReq, Map<String, Object> param) {
+    public ResponseResult page(String moduleId, BasePageReq basePageReq, Map<String, Object> param) {
         BaseModule module = getModule(moduleId);
-        return ResponseVo.success(module.getBaseCrudService().page(validateAndGet(param, module.getReqClass()), basePageReq));
+        return ResponseResult.success(module.getBaseCrudService().page(validateAndGet(param, module.getReqClass()), basePageReq));
     }
 
     private BaseReq validateAndGet(Map<String, Object> param, Class<? extends BaseReq> clazz) {

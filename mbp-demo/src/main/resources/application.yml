@@ -3,18 +3,23 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
-    url: jdbc:mysql://192.168.99.3:3306/test?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai #添加时区
+    url: jdbc:mysql://127.0.1:3306/test?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai #添加时区
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8 # 设置返回json的日期格式
   redis:
-    host: 192.168.99.3
+    host: 127.0.0.1
     port: 6379
     timeout: 10000
     maxIdle: 200
     maxTotal: 500
     maxWaitMillis: 1000
     testOnBorrow: true
+  servlet:
+    multipart:
+      max-file-size: 300MB  #设置上传文件的大小设置
+      max-request-size: 500MB
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql日志

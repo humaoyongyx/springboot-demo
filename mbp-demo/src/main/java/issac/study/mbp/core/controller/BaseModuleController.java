@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import issac.study.mbp.core.annotation.PrintLog;
 import issac.study.mbp.core.module.BaseModuleService;
 import issac.study.mbp.core.req.BasePageReq;
-import issac.study.mbp.core.response.ResponseVo;
+import issac.study.mbp.core.response.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +37,7 @@ public class BaseModuleController {
     @ApiImplicitParam(paramType = "path", name = "moduleId", value = "通用的接口名称", required = true)
     @GetMapping(value = "/{id}")
     @PrintLog("id查询")
-    public ResponseVo getById(@PathVariable("moduleId") String moduleId, @PathVariable("id") Integer id) {
+    public ResponseResult getById(@PathVariable("moduleId") String moduleId, @PathVariable("id") Integer id) {
         return baseModuleService.getById(moduleId, id);
     }
 
@@ -49,7 +49,7 @@ public class BaseModuleController {
     })
     @GetMapping(value = "/page")
     @PrintLog("分页")
-    public ResponseVo page(@PathVariable("moduleId") String moduleId, BasePageReq basePageReq, @RequestParam(required = false) Map<String, Object> param) {
+    public ResponseResult page(@PathVariable("moduleId") String moduleId, BasePageReq basePageReq, @RequestParam(required = false) Map<String, Object> param) {
         return baseModuleService.page(moduleId, basePageReq, param);
     }
 
@@ -57,7 +57,7 @@ public class BaseModuleController {
     @ApiImplicitParam(paramType = "path", name = "moduleId", value = "通用的接口名称", required = true)
     @PostMapping
     @PrintLog("单条保存")
-    public ResponseVo save(@PathVariable("moduleId") String moduleId, @RequestBody(required = false) Map<String, Object> param) {
+    public ResponseResult save(@PathVariable("moduleId") String moduleId, @RequestBody(required = false) Map<String, Object> param) {
         return baseModuleService.save(moduleId, param);
     }
 
@@ -68,7 +68,7 @@ public class BaseModuleController {
     })
     @PutMapping("/{id}")
     @PrintLog("单条更新")
-    public ResponseVo update(@PathVariable("moduleId") String moduleId, @PathVariable("id") Integer id, @RequestBody(required = false) Map<String, Object> param, @RequestParam(required = false, defaultValue = "false") boolean withNull) {
+    public ResponseResult update(@PathVariable("moduleId") String moduleId, @PathVariable("id") Integer id, @RequestBody(required = false) Map<String, Object> param, @RequestParam(required = false, defaultValue = "false") boolean withNull) {
         param.put("id", id);
         return baseModuleService.update(moduleId, param, withNull);
     }
@@ -77,7 +77,7 @@ public class BaseModuleController {
     @ApiImplicitParam(paramType = "path", name = "moduleId", value = "通用的接口名称", required = true)
     @DeleteMapping("/{id}")
     @PrintLog("单条删除")
-    public ResponseVo delete(@PathVariable("moduleId") String moduleId, @PathVariable("id") Integer id) {
+    public ResponseResult delete(@PathVariable("moduleId") String moduleId, @PathVariable("id") Integer id) {
         return baseModuleService.delete(moduleId, id);
     }
 

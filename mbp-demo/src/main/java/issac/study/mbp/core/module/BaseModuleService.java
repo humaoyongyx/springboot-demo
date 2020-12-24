@@ -1,7 +1,7 @@
 package issac.study.mbp.core.module;
 
 import issac.study.mbp.core.req.BasePageReq;
-import issac.study.mbp.core.response.ResponseVo;
+import issac.study.mbp.core.response.ResponseResult;
 
 import java.util.Map;
 
@@ -17,7 +17,7 @@ public interface BaseModuleService {
      * @param param
      * @return
      */
-    ResponseVo save(String moduleId, Map<String, Object> param);
+    ResponseResult save(String moduleId, Map<String, Object> param);
 
     /**
      * 更新
@@ -27,7 +27,7 @@ public interface BaseModuleService {
      * @param withNull
      * @return
      */
-    ResponseVo update(String moduleId, Map<String, Object> param, boolean withNull);
+    ResponseResult update(String moduleId, Map<String, Object> param, boolean withNull);
 
     /**
      * 删除
@@ -36,7 +36,7 @@ public interface BaseModuleService {
      * @param id
      * @return
      */
-    ResponseVo delete(String moduleId, Integer id);
+    ResponseResult delete(String moduleId, Integer id);
 
     /**
      * id查询
@@ -45,7 +45,7 @@ public interface BaseModuleService {
      * @param id
      * @return
      */
-    ResponseVo getById(String moduleId, Integer id);
+    ResponseResult getById(String moduleId, Integer id);
 
     /**
      * 分页查询
@@ -55,5 +55,5 @@ public interface BaseModuleService {
      * @param param
      * @return
      */
-    ResponseVo page(String moduleId, BasePageReq basePageReq, Map<String, Object> param);
+    ResponseResult page(String moduleId, BasePageReq basePageReq, Map<String, Object> param);
 }

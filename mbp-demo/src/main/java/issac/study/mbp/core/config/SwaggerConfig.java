@@ -1,7 +1,7 @@
 package issac.study.mbp.core.config;
 
 import com.fasterxml.classmate.TypeResolver;
-import issac.study.mbp.core.response.ResponseVo;
+import issac.study.mbp.core.response.ResponseResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("api")
                 .enable(enableSwagger)
-                .additionalModels(new TypeResolver().resolve(ResponseVo.class))
+                .additionalModels(new TypeResolver().resolve(ResponseResult.class))
                 .apiInfo(webApiInfo())
                 //分组名称
                 .groupName("api v1")

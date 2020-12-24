@@ -39,7 +39,7 @@ public class OkHttpClientFactory {
         }
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(log::debug);
         //打印请求链路，debug级别
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 //设置https请求不校验证书
                 .sslSocketFactory(sslContext.getSocketFactory(), defaultTrustManager)
@@ -49,7 +49,7 @@ public class OkHttpClientFactory {
                 .connectionPool(new ConnectionPool(10, 5, TimeUnit.MINUTES)) //默认5个连接 5分钟
                 //连接时间设置 对应socket的connect / read / write
                 .connectTimeout(10L, TimeUnit.SECONDS) //默认10s
-                .readTimeout(10L, TimeUnit.SECONDS)  //默认10s
+                .readTimeout(15L, TimeUnit.SECONDS)  //请求到返回的时间  默认10s
                 .writeTimeout(10L, TimeUnit.SECONDS) //默认10s
                 //请求日志打印
                 .addInterceptor(httpLoggingInterceptor)

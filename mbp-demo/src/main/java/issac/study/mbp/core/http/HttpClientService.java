@@ -1,5 +1,6 @@
 package issac.study.mbp.core.http;
 
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -19,7 +20,7 @@ public interface HttpClientService {
      * get请求
      *
      * @param url    请求地址
-     * @param params 请求参数 参数最终拼接在url上
+     * @param params 请求参数 参数拼接在url上
      * @return
      */
     String get(String url, Map<String, Object> params);
@@ -28,7 +29,7 @@ public interface HttpClientService {
      * get请求
      *
      * @param url     请求地址
-     * @param params  请求参数 参数最终拼接在url上
+     * @param params  请求参数 参数拼接在url上
      * @param headers 请求头
      * @return
      */
@@ -66,7 +67,7 @@ public interface HttpClientService {
      * post 带json请求请求
      *
      * @param url      请求地址
-     * @param params   请求参数 参数最终拼接在url上，而不是body中
+     * @param params   请求参数 参数拼接在url上，而不是body中
      * @param headers  请求头
      * @param jsonBody 请求的json字符串 拼接在body中
      * @return
@@ -84,4 +85,16 @@ public interface HttpClientService {
      * @return
      */
     String execute(HttpMethod httpMethod, String url, Map<String, Object> params, Map<String, String> headers, String jsonBody);
+
+    /**
+     * 文件上传接口
+     *
+     * @param url          请求地址
+     * @param params       请求参数  参数拼接在url上
+     * @param headers      请求头
+     * @param formFileName 表单中的文件名称
+     * @param files        文件列表
+     * @return
+     */
+    boolean uploadFiles(String url, Map<String, Object> params, Map<String, String> headers, String formFileName, File... files);
 }

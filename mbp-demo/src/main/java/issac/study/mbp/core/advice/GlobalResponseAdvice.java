@@ -1,7 +1,7 @@
 package issac.study.mbp.core.advice;
 
 import issac.study.mbp.core.annotation.RespVo;
-import issac.study.mbp.core.response.ResponseVo;
+import issac.study.mbp.core.response.ResponseResult;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -55,9 +55,9 @@ public class GlobalResponseAdvice implements ResponseBodyAdvice<Object> {
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
                                   ServerHttpResponse response) {
-        if (body != null && body instanceof ResponseVo) {
+        if (body != null && body instanceof ResponseResult) {
             return body;
         }
-        return ResponseVo.success(body);
+        return ResponseResult.success(body);
     }
 }
