@@ -55,6 +55,14 @@ public class MapParam {
         return this.map;
     }
 
+    public Map<String, String> toStringMap() {
+        Map<String, String> result = new HashMap<>();
+        for (Map.Entry<String, Object> entry : this.map.entrySet()) {
+            result.put(entry.getKey(), entry.getValue() == null ? null : String.valueOf(entry.getValue()));
+        }
+        return result;
+    }
+
     public String toJsonString() {
         return ConvertUtils.toJsonString(this.map);
     }

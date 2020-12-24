@@ -13,6 +13,10 @@
     <name>mbp-demo</name>
     <description>Demo project for Spring Boot</description>
 
+    <properties>
+        <okHttpClient.version>3.14.9</okHttpClient.version>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -114,6 +118,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okHttpClient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>logging-interceptor</artifactId>
+            <version>${okHttpClient.version}</version>
         </dependency>
 
     </dependencies>
