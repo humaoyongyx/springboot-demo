@@ -1,6 +1,5 @@
 package issac.study.mbp.core.http;
 
-import java.io.File;
 import java.util.Map;
 
 /**
@@ -86,15 +85,5 @@ public interface HttpClientService {
      */
     String execute(HttpMethod httpMethod, String url, Map<String, Object> params, Map<String, String> headers, String jsonBody);
 
-    /**
-     * 文件上传接口
-     *
-     * @param url          请求地址
-     * @param params       请求参数  参数拼接在url上
-     * @param headers      请求头
-     * @param formFileName 表单中的文件名称
-     * @param files        文件列表
-     * @return
-     */
-    boolean uploadFiles(String url, Map<String, Object> params, Map<String, String> headers, String formFileName, File... files);
+
 }

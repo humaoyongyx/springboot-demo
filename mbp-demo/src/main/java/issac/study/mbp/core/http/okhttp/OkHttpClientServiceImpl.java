@@ -3,12 +3,12 @@ package issac.study.mbp.core.http.okhttp;
 import issac.study.mbp.core.http.HttpClientService;
 import issac.study.mbp.core.http.HttpMethod;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
-import org.apache.commons.lang3.StringUtils;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
@@ -18,20 +18,11 @@ import java.util.Objects;
  * @author issac.hu
  */
 @Slf4j
-public class OkHttpClientServiceImpl implements HttpClientService {
+public class OkHttpClientServiceImpl extends OkHttpClientBaseImpl implements HttpClientService {
 
-    /**
-     * 慢请求时间 单位毫秒ms
-     */
-    private static final long SLOW_TIME = 200L;
-
-    private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final MediaType MEDIA_TYPE_URL = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");
-    private static final MediaType MULTIPART_FORM_DATA = MediaType.parse("multipart/form-data; charset=utf-8");
-    private OkHttpClient okHttpClient;
+    private OkHttpClient okHttpClient = OkHttpClientFactory.getInstance();
 
     public OkHttpClientServiceImpl() {
-        this.okHttpClient = OkHttpClientFactory.getInstance();
     }
 
     public OkHttpClientServiceImpl(OkHttpClient okHttpClient) {
@@ -116,94 +107,6 @@ public class OkHttpClientServiceImpl implements HttpClientService {
             }
         }
         return null;
-    }
-
-    private void setHeader(Map<String, String> headers, Request.Builder requestBuilder) {
-        if (headers != null && !headers.isEmpty()) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (StringUtils.isNotBlank(key) && StringUtils.isNotBlank(value)) {
-                    requestBuilder.addHeader(key, value);
-                }
-            }
-        }
-    }
-
-    private String checkUrl(String url) {
-        Objects.requireNonNull(url);
-        url = url.trim();
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
-            throw new RuntimeException("非法的url参数");
-        }
-        return url;
-    }
-
-    private RequestBody emptyRequestBody() {
-        return RequestBody.create(MEDIA_TYPE_URL, "");
-    }
-
-    private RequestBody convertParamMapToRequestBody(Map<String, Object> params) {
-        if (params != null && !params.isEmpty()) {
-            StringBuilder paramUrl = new StringBuilder();
-            Iterator<Map.Entry<String, Object>> iterator = params.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, Object> entry = iterator.next();
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                if (StringUtils.isNotBlank(key) && value != null) {
-                    paramUrl.append(entry.getKey()).append("=").append(entry.getValue());
-                    if (iterator.hasNext()) {
-                        paramUrl.append("&");
-                    }
-                }
-            }
-            return RequestBody.create(MEDIA_TYPE_URL, paramUrl.toString());
-        }
-        return null;
-    }
-
-    private HttpUrl.Builder convertParamMapToHttpUrl(String url, Map<String, Object> params) {
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
-        if (params != null && !params.isEmpty()) {
-            for (Map.Entry<String, Object> entry : params.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                if (StringUtils.isNotBlank(key) && value != null) {
-                    String val = String.valueOf(value);
-                    urlBuilder.addQueryParameter(key, val);
-                }
-            }
-        }
-        return urlBuilder;
-    }
-
-    @Override
-    public boolean uploadFiles(String url, Map<String, Object> params, Map<String, String> headers, String formFileName, File... files) {
-        url = checkUrl(url);
-        HttpUrl httpUrl = convertParamMapToHttpUrl(url, params).build();
-        Request.Builder requestBuilder = new Request.Builder();
-        requestBuilder.url(httpUrl);
-        setHeader(headers, requestBuilder);
-        MultipartBody.Builder multiPartBodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        for (File file : files) {
-            multiPartBodyBuilder.addFormDataPart(formFileName, file.getName(), RequestBody.create(MULTIPART_FORM_DATA, file));
-        }
-        long begin = System.currentTimeMillis();
-        Request request = requestBuilder.post(multiPartBodyBuilder.build()).build();
-        try {
-            okHttpClient.newCall(request).execute();
-            return true;
-        } catch (IOException e) {
-            log.error("okHttpClient uploadFiles error:", e);
-        } finally {
-            long end = System.currentTimeMillis();
-            long cost = end - begin;
-            if (cost > SLOW_TIME) {
-                log.warn("slow request: {} , cost: {}ms ", request, cost);
-            }
-        }
-        return false;
     }
 
 }

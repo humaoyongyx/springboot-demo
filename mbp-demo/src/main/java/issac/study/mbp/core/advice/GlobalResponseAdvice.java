@@ -1,9 +1,10 @@
 package issac.study.mbp.core.advice;
 
-import issac.study.mbp.core.annotation.RespVo;
+import issac.study.mbp.core.annotation.RespSuccess;
 import issac.study.mbp.core.response.ResponseResult;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -30,13 +31,13 @@ public class GlobalResponseAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         Class<?> declaringClass = returnType.getMethod().getDeclaringClass();
-        RespVo classRespVo = declaringClass.getAnnotation(RespVo.class);
-        if (classRespVo != null) {
+        RespSuccess classRespSuccess = declaringClass.getAnnotation(RespSuccess.class);
+        if (classRespSuccess != null) {
             return true;
         } else {
             AnnotatedElement annotatedElement = returnType.getAnnotatedElement();
-            RespVo respVo = annotatedElement.getAnnotation(RespVo.class);
-            return respVo != null;
+            RespSuccess respSuccess = annotatedElement.getAnnotation(RespSuccess.class);
+            return respSuccess != null;
         }
     }
 
@@ -55,8 +56,10 @@ public class GlobalResponseAdvice implements ResponseBodyAdvice<Object> {
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
                                   Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
                                   ServerHttpResponse response) {
-        if (body != null && body instanceof ResponseResult) {
-            return body;
+        if (body != null) {
+            if (body instanceof ResponseEntity || body instanceof ResponseResult) {
+                return body;
+            }
         }
         return ResponseResult.success(body);
     }

@@ -20,12 +20,21 @@ public class OkHttpClientFactory {
 
     private static final OkHttpClient instance = buildInstance();
 
+    private static OkHttpClient fileInstance;
+
     private OkHttpClientFactory() {
 
     }
 
     public static OkHttpClient getInstance() {
         return instance;
+    }
+
+    public synchronized static OkHttpClient getFileInstance() {
+        if (fileInstance == null) {
+            fileInstance = buildFileInstance();
+        }
+        return fileInstance;
     }
 
     private static OkHttpClient buildInstance() {
@@ -39,7 +48,7 @@ public class OkHttpClientFactory {
         }
         HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(log::debug);
         //打印请求链路，debug级别
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 //设置https请求不校验证书
                 .sslSocketFactory(sslContext.getSocketFactory(), defaultTrustManager)
@@ -54,9 +63,29 @@ public class OkHttpClientFactory {
                 //请求日志打印
                 .addInterceptor(httpLoggingInterceptor)
                 .build();
-
         return okHttpClient;
     }
 
+    private static OkHttpClient buildFileInstance() {
+        try {
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            DefaultTrustManager defaultTrustManager = new DefaultTrustManager();
+            sslContext.init(null, new TrustManager[]{defaultTrustManager}, new SecureRandom());
+            HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(log::debug);
+            //打印请求链路，debug级别
+            httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            return new OkHttpClient.Builder()
+                    //设置https请求不校验证书
+                    .sslSocketFactory(sslContext.getSocketFactory(), defaultTrustManager)
+                    .hostnameVerifier(new TrustAnyHostnameVerifier())
+                    .retryOnConnectionFailure(false)
+                    .readTimeout(30L, TimeUnit.SECONDS)
+                    .addInterceptor(httpLoggingInterceptor)
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("okHttpClient实例化失败");
+        }
+    }
 
 }

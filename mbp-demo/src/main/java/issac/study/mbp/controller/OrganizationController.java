@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import issac.study.mbp.core.annotation.PrintLog;
-import issac.study.mbp.core.annotation.RespVo;
+import issac.study.mbp.core.annotation.RespSuccess;
 import issac.study.mbp.core.req.BasePageReq;
 import issac.study.mbp.req.OrganizationReq;
 import issac.study.mbp.service.OrganizationService;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Api(tags = "组织管理模块")
 @RestController
-@RespVo
+@RespSuccess
 @RequestMapping("/api/org")
 public class OrganizationController {
 
