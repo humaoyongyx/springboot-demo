@@ -1,4 +1,4 @@
-package issac.study.mbp.test;
+package issac.study.mbp.file;
 
 import issac.study.mbp.core.http.HttpHelper;
 import issac.study.mbp.core.utils.MapParam;
@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * @author issac.hu
  */
-public class SimpleTest {
+public class FileTest {
 
     public static void main(String[] args) {
 
@@ -22,7 +22,6 @@ public class SimpleTest {
 
     private static void download() {
         Response response = HttpHelper.fileClient().download("http://localhost:8080/api/file/download");
-
         if (response != null) {
             Map<String, List<String>> stringListMap = response.headers().toMultimap();
             String fileNameFromDisposition = HttpHelper.getFileNameFromDisposition(stringListMap);
