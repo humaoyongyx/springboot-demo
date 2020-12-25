@@ -5,6 +5,7 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.PropertyFilter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.apache.commons.lang3.StringUtils;
 
@@ -122,12 +123,23 @@ public class ConvertUtils {
     }
 
     /**
-     * copy非空值属性,支持属性的类型不相同
+     * copy非null值属性,支持属性的类型不相同
      *
      * @param source
      * @param target
      */
     public static void copyNotNullProperties(Object source, Object target) {
+        BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+    }
+
+    /**
+     * copy非空值属性,支持属性的类型不相同
+     *
+     * @param source
+     * @param target
+     */
+    public static void copyNotBlankProperties(Object source, Object target) {
+        source = setBlankStringFieldToNull(source);
         BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
     }
 
@@ -192,8 +204,46 @@ public class ConvertUtils {
         }
     }
 
+    /**
+     * 格式化json字符串
+     *
+     * @param jsonStr
+     * @return
+     */
+    public static String formatJsonStr(String jsonStr) {
+        return toJsonString(JSON.parseObject(jsonStr), true);
+    }
+
+    /**
+     * 将对象转换为json字符串
+     *
+     * @param object
+     * @return
+     */
     public static String toJsonString(Object object) {
         return toJsonString(object, false);
+    }
+
+    /**
+     * 将对象的String类型的字段设置为null，如果其值为空
+     *
+     * @param source
+     * @return
+     */
+    public static Object setBlankStringFieldToNull(Object source) {
+        Class<?> sourceClass = source.getClass();
+        PropertyFilter propertyFilter = (object, name, value) -> {
+            if (value == null) {
+                return false;
+            }
+            if (value instanceof String) {
+                if (StringUtils.isBlank((CharSequence) value)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        return JSON.parseObject(JSON.toJSONString(source, propertyFilter), sourceClass);
     }
 
     /**
@@ -256,6 +306,5 @@ public class ConvertUtils {
     private static String toJsonString(Object object, SerializerFeature... serializerFeatures) {
         return JSON.toJSONString(object, serializerFeatures);
     }
-
 
 }
