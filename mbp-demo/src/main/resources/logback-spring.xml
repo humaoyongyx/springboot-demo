@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </layout>
+    </appender>
+
+    <appender name="fileLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+        <file>logs/mbp.log</file>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 文件路径 -->
+            <fileNamePattern>logs/%d{yyyy-MM,aux}/%d{yyyy-MM-dd,aux}/root.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <!-- 日志单个文件大小 -->
+            <maxFileSize>500MB</maxFileSize>
+            <!-- 文件保存期限单位天 -->
+            <maxHistory>30</maxHistory>
+            <!-- 文件总大小，超过后删除旧的日志 -->
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <logger level="DEBUG" name="issac.study.mbp.core">
+        <appender-ref ref="consoleLog"/>
+    </logger>
+
+    <!-- All log -->
+    <root level="info">
+        <appender-ref ref="consoleLog"/>
+        <appender-ref ref="fileLog"/>
+    </root>
+
+</configuration>
