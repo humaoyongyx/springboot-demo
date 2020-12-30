@@ -16,8 +16,8 @@ public class FileTest {
     public static void main(String[] args) {
 
 //          upload();
-//          post();
-        download();
+          post();
+//        download();
     }
 
     private static void download() {

@@ -35,7 +35,7 @@ public class FileController {
             String key = parameterNames.nextElement();
             System.out.println(key + "->" + request.getParameter(key));
         }
-        System.out.println(param);
+        System.out.println("param:" + param);
         if (files != null) {
             for (MultipartFile file : files) {
                 log.info("name:{},originalName:{}", file.getName(), file.getOriginalFilename());
