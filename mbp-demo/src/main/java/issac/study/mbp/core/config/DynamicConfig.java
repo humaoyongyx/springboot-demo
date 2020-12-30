@@ -58,7 +58,7 @@ public class DynamicConfig {
     @Scheduled(fixedRate = 60000)
     public void refresh() {
         List<ConfigModel> configModelList = configMapper.selectList(null);
-        logger.debug("refresh configModelList:{}", JSON.toJSONString(configModelList));
+        logger.debug("refresh configs:{}", JSON.toJSONString(configModelList));
         for (ConfigModel configEntity : configModelList) {
             if (StringUtils.isNotBlank(configEntity.getCKey()) && StringUtils.isNotBlank(configEntity.getCVal())) {
                 String key = getConfigCacheKey(configEntity.getCKey().trim());
