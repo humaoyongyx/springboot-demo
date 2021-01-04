@@ -2,6 +2,7 @@ package issac.study.mbp.core.advice;
 
 
 import issac.study.mbp.core.annotation.PrintLog;
+import issac.study.mbp.core.req.BaseReq;
 import issac.study.mbp.core.utils.ConvertUtils;
 import issac.study.mbp.core.utils.RequestIpUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * 这种拦截器，如果参数没有toString 使用下面的toJson的方法不是太好
+ * <p>
  * 通用日志拦截
  */
 @Component
@@ -54,8 +57,33 @@ public class LogPrintAdvice {
         return resultStr;
     }
 
+    // 不推荐这种打印方式，如果参数是特殊对象 如httpServletRequest或者file等会有问题
     private String getArgs(PrintLog printLog, Object[] args) {
-        return printLog.showArgs() ? ConvertUtils.toJsonString(args, true, false, true) : "";
+
+        return printLog.showArgs() ? printArgs(args) : "";
+    }
+
+    // 优化参数打印
+    private String printArgs(Object[] args) {
+
+        StringBuffer sb = new StringBuffer("[ ");
+
+        if (args != null) {
+            int i = 1;
+            for (Object arg : args) {
+                if (arg instanceof BaseReq) {
+                    sb.append(ConvertUtils.toJsonString(arg));
+                } else {
+                    sb.append(arg);
+                }
+                if (i < args.length) {
+                    sb.append(" , ");
+                }
+                i++;
+            }
+        }
+        sb.append(" ]");
+        return sb.toString();
     }
 
     private HttpServletRequest getHttpServletRequest() {
