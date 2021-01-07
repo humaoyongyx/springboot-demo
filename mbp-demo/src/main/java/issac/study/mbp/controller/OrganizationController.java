@@ -52,7 +52,7 @@ public class OrganizationController {
     }
 
     @ApiOperation("id查询")
-    @GetMapping("/get")
+    @RequestMapping("/get")
     @PrintLog
     public OrganizationVo get(Integer id, HttpServletRequest request) {
         return organizationService.getById(id);

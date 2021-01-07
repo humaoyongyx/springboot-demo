@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 /**
+ * 简单的通用增删改查Controller
+ *
  * @author humy6
  * @Date: 2019/7/1 13:17
  * <p>
@@ -21,8 +23,8 @@ import java.util.Map;
  * moduleId 为具体请求类的名称：如equipment
  */
 @Api(tags = "通用接口")
-@RestController
-@RequestMapping("/api/{moduleId}/")
+//@RestController
+//@RequestMapping("/api/{moduleId}/")
 public class BaseModuleController {
 
     @Autowired
