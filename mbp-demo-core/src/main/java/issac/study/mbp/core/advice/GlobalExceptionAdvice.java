@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
+
 /**
  * 全局异常处理器
  *
@@ -31,6 +33,13 @@ public class GlobalExceptionAdvice {
         return ResponseResult.fail("系统异常，请联系管理员！");
     }
 
+    /**
+     * 处理参数验证异常
+     * valid注解 和 bean上的注解结合
+     *
+     * @param e
+     * @return
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     public ResponseResult BindExceptionHandler(BindException e) {
@@ -41,10 +50,24 @@ public class GlobalExceptionAdvice {
         return ResponseResult.fail(msg);
     }
 
-
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseResult MethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        LOGGER.error("global MethodArgumentNotValidException:", e);
+        return ResponseResult.fail(e.getMessage());
+    }
+
+    /**
+     * 处理参数验证异常
+     * <p>
+     * validate注解controller和当个参数验证
+     *
+     * @param e
+     * @return
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseResult ConstraintViolationException(ConstraintViolationException e) {
         LOGGER.error("global MethodArgumentNotValidException:", e);
         return ResponseResult.fail(e.getMessage());
     }
