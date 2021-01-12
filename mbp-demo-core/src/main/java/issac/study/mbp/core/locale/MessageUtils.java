@@ -20,8 +20,8 @@ public class MessageUtils {
      * @param key
      * @return
      */
-    public static String getMessage(String key) {
-        return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
+    public static String get(String key) {
+        return get(key, null);
     }
 
     /**
@@ -31,7 +31,7 @@ public class MessageUtils {
      * @param args 格式化占位符
      * @return
      */
-    public static String getMessage(String key, Object[] args) {
+    public static String get(String key, Object... args) {
         return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
     }
 }

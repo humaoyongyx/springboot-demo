@@ -18,6 +18,6 @@ public class LocaleController {
 
     @GetMapping("/")
     public String test(@NotBlank String code) {
-        return MessageUtils.getMessage("hello");
+        return MessageUtils.get("hellox");
     }
 }
