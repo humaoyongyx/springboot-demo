@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 
 /**
  * 全局异常处理器
@@ -25,7 +25,6 @@ import javax.validation.ConstraintViolationException;
 public class GlobalExceptionAdvice {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionAdvice.class);
-
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
@@ -66,12 +65,11 @@ public class GlobalExceptionAdvice {
      * @return
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseResult constraintViolationException(ConstraintViolationException e) {
-        LOGGER.error("global MethodArgumentNotValidException:", e);
+    @ExceptionHandler(ValidationException.class)
+    public ResponseResult validationException(ValidationException e) {
+        LOGGER.error("global ValidationException:", e);
         return ResponseResult.fail(e.getMessage());
     }
-
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(BusinessRuntimeException.class)

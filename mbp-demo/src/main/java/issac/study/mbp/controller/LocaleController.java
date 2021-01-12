@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
 /**
@@ -17,7 +18,7 @@ import javax.validation.constraints.NotBlank;
 public class LocaleController {
 
     @GetMapping("/")
-    public String test(@NotBlank String code) {
+    public String test(@NotBlank String code, @Min(2) Integer num) {
         return MessageUtils.get("hellox");
     }
 }
