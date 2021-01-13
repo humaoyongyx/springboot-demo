@@ -1,18 +1,18 @@
 package issac.study.mbp.core.exception;
 
+import issac.study.mbp.core.constant.ErrorCodeConstant;
+import lombok.Data;
+
 /**
  * @author humy6
  * @Date: 2019/7/2 8:46
  */
-public class BusinessRuntimeException extends RuntimeException {
+@Data
+public class BusinessRuntimeException extends RuntimeException implements ErrorCodeConstant {
 
-    /**
-     * 一般类型的错误代码
-     */
-    public static final int ERROR_CODE_DEFAULT = -1;
     private int errorCode;
-    private String msg;
 
+    private String msg;
 
     public static BusinessRuntimeException errorCode(IErrorCode errorCode) {
         return new BusinessRuntimeException(errorCode.getErrorCode(), errorCode.getMsg());
@@ -23,7 +23,7 @@ public class BusinessRuntimeException extends RuntimeException {
     }
 
     public static BusinessRuntimeException error(String msg) {
-        return new BusinessRuntimeException(ERROR_CODE_DEFAULT, msg);
+        return new BusinessRuntimeException(DEFAULT_FAIL_ERROR_CODE, msg);
     }
 
     private BusinessRuntimeException(int errorCode, String msg) {
@@ -32,19 +32,4 @@ public class BusinessRuntimeException extends RuntimeException {
         this.msg = msg;
     }
 
-    public int getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
 }

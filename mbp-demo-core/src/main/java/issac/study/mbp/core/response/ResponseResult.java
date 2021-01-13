@@ -1,6 +1,7 @@
 package issac.study.mbp.core.response;
 
 import io.swagger.annotations.ApiModelProperty;
+import issac.study.mbp.core.constant.ErrorCodeConstant;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -9,11 +10,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-public class ResponseResult {
-
-    public static final int SUCCESS_ERROR_CODE = 0;
-    public static final int FAIL_ERROR_CODE = -1;
-    public static final String SUCCESS_MSG = "SUCCESS";
+public class ResponseResult implements ErrorCodeConstant {
 
     @ApiModelProperty("请求是否成功")
     private Boolean success;
@@ -30,16 +27,16 @@ public class ResponseResult {
     public static ResponseResult success() {
         ResponseResult responseResult = new ResponseResult();
         responseResult.setSuccess(true);
-        responseResult.setErrorCode(SUCCESS_ERROR_CODE);
-        responseResult.setMsg(SUCCESS_MSG);
+        responseResult.setErrorCode(DEFAULT_SUCCESS_ERROR_CODE);
+        responseResult.setMsg(DEFAULT_SUCCESS_MSG);
         return responseResult;
     }
 
     public static ResponseResult success(Object data) {
         ResponseResult responseResult = new ResponseResult();
         responseResult.setSuccess(true);
-        responseResult.setErrorCode(SUCCESS_ERROR_CODE);
-        responseResult.setMsg(SUCCESS_MSG);
+        responseResult.setErrorCode(DEFAULT_SUCCESS_ERROR_CODE);
+        responseResult.setMsg(DEFAULT_SUCCESS_MSG);
         responseResult.setData(data);
         return responseResult;
     }
@@ -56,7 +53,7 @@ public class ResponseResult {
     public static ResponseResult fail(String msg) {
         ResponseResult responseResult = new ResponseResult();
         responseResult.setSuccess(false);
-        responseResult.setErrorCode(FAIL_ERROR_CODE);
+        responseResult.setErrorCode(DEFAULT_FAIL_ERROR_CODE);
         responseResult.setMsg(msg);
         return responseResult;
     }
