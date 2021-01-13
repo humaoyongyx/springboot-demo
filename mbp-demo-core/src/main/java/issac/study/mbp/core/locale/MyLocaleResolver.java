@@ -12,7 +12,7 @@ import java.util.Locale;
 /**
  * 国际化解析器
  * <p>
- * 解析url参数是否带有lang，如果解析header Accept-Language
+ * 解析url参数是否带有locale，解析header Accept-Language
  *
  * @author issac.hu
  */
