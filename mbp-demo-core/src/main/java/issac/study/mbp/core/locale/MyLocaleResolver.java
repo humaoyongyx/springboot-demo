@@ -29,14 +29,15 @@ public class MyLocaleResolver implements LocaleResolver {
             try {
                 locale = org.springframework.util.StringUtils.parseLocale(lang);
             } catch (Exception e) {
-                e.printStackTrace();
+                //解析不出将会使用默认的Locale.CHINA
+                locale = Locale.CHINA;
             }
+            return locale;
         } else {
             AcceptHeaderLocaleResolver acceptHeaderLocaleResolver = new AcceptHeaderLocaleResolver();
             acceptHeaderLocaleResolver.setDefaultLocale(locale);
             return acceptHeaderLocaleResolver.resolveLocale(request);
         }
-        return locale;
     }
 
     @Override
