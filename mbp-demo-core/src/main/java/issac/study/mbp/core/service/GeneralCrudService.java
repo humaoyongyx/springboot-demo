@@ -7,6 +7,8 @@ import issac.study.mbp.core.model.GeneralModel;
 import issac.study.mbp.core.req.BasePageReq;
 import issac.study.mbp.core.req.BaseReq;
 
+import java.util.List;
+
 
 /**
  * @author issac.hu
@@ -89,17 +91,25 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
     Integer deleteById(Integer id);
 
     /**
-     * 验证请求参数 @valid
+     * 验证请求参数 相当于@valid
      *
      * @param req
      */
     void validateReq(Object req);
 
     /**
-     * 验证请求参数 @valid
+     * 验证请求参数 相当于@valid
      *
      * @param req
      * @param checkNone 是否检查参数为null
      */
     void validateReq(Object req, boolean checkNone);
+
+    /**
+     * 列表参数验证 相当于@valid
+     *
+     * @param reqs
+     * @param checkNone
+     */
+    void validateReqs(List<Object> reqs, boolean checkNone);
 }

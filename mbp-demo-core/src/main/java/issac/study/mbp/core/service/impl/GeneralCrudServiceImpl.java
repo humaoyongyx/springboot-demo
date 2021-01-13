@@ -12,7 +12,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import issac.study.mbp.core.annotation.TimeBegin;
 import issac.study.mbp.core.annotation.TimeEnd;
 import issac.study.mbp.core.exception.BusinessRuntimeException;
-import issac.study.mbp.core.exception.ErrorCode;
+import issac.study.mbp.core.exception.CoreErrorCode;
+import issac.study.mbp.core.locale.MessageUtils;
 import issac.study.mbp.core.model.GeneralModel;
 import issac.study.mbp.core.req.BasePageReq;
 import issac.study.mbp.core.req.BaseReq;
@@ -26,6 +27,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.ValidationException;
 import javax.validation.Validator;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -295,15 +297,23 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
 
     @Override
     public void validateReq(Object req, boolean checkNone) {
+        validateReqs(Arrays.asList(req), checkNone);
+    }
+
+    @Override
+    public void validateReqs(List<Object> reqs, boolean checkNone) {
         if (checkNone) {
-            if (req == null) {
-                throw BusinessRuntimeException.errorCode(ErrorCode.COMMON_PARAM_NULL_ERROR);
+            if (reqs == null) {
+                throw BusinessRuntimeException.errorCode(CoreErrorCode.CORE_PARAM_NULL_ERROR);
             }
         }
-        Set<ConstraintViolation<Object>> validate = validator.validate(req);
-        if (!validate.isEmpty()) {
-            ConstraintViolation<Object> next = validate.iterator().next();
-            throw BusinessRuntimeException.error(next.getPropertyPath() + " " + next.getMessage());
+        for (Object req : reqs) {
+            Set<ConstraintViolation<Object>> validate = validator.validate(req);
+            if (!validate.isEmpty()) {
+                ConstraintViolation<Object> next = validate.iterator().next();
+                String msg = MessageUtils.get("mbp.core.validate", next.getPropertyPath(), next.getInvalidValue(), next.getMessage());
+                throw new ValidationException(msg);
+            }
         }
     }
 

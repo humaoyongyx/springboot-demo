@@ -41,6 +41,7 @@ public class OrganizationController {
     @PrintLog
     public OrganizationVo update(@PathVariable("id") Integer id, OrganizationReq organizationReq) {
         organizationReq.setId(id);
+        organizationService.validateReq(organizationReq);
         return organizationService.update(organizationReq);
     }
 

@@ -18,7 +18,7 @@ import javax.validation.constraints.NotBlank;
 public class LocaleController {
 
     @GetMapping("/")
-    public String test(@NotBlank String code, @Min(2) Integer num) {
-        return MessageUtils.get("hellox");
+    public String test(@NotBlank(message = "{validator.notBlank}") String code, @Min(2) Integer num) {
+        return MessageUtils.get("hello");
     }
 }

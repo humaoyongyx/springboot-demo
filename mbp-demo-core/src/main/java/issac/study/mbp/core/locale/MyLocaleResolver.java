@@ -18,19 +18,18 @@ import java.util.Locale;
  */
 public class MyLocaleResolver implements LocaleResolver {
 
-    public static final String LANG = "lang";
+    public static final String LOCALE = "locale";
 
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
-        String lang = request.getParameter(LANG);
+        String lang = request.getParameter(LOCALE);
         //默认locale中文_大陆
-        Locale locale = new Locale("zh", "CN");
+        Locale locale = Locale.CHINA;
         if (StringUtils.isNotBlank(lang)) {
-            String[] items = lang.split("_");
-            if (items.length == 1) {
-                locale = new Locale(items[0]);
-            } else if (items.length > 1) {
-                locale = new Locale(items[0], items[1]);
+            try {
+                locale = org.springframework.util.StringUtils.parseLocale(lang);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         } else {
             AcceptHeaderLocaleResolver acceptHeaderLocaleResolver = new AcceptHeaderLocaleResolver();
