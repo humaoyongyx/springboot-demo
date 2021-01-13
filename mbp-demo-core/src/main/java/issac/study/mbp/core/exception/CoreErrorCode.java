@@ -4,7 +4,7 @@ package issac.study.mbp.core.exception;
 import issac.study.mbp.core.locale.MessageUtils;
 
 /**
- * 支持国际化的消息，msg被{}包含的将交由国际化message处理
+ * 支持国际化的消息
  *
  * @author issac.hu
  */
@@ -18,9 +18,7 @@ public enum CoreErrorCode implements IErrorCode {
     private Boolean i18n;
 
     CoreErrorCode(Integer errorCode, String msg) {
-        this.errorCode = errorCode;
-        this.msg = msg;
-        this.i18n = true;
+        this(errorCode, msg, true);
     }
 
     CoreErrorCode(Integer errorCode, String msg, boolean i18n) {
@@ -28,7 +26,6 @@ public enum CoreErrorCode implements IErrorCode {
         this.msg = msg;
         this.i18n = i18n;
     }
-
 
     @Override
     public Integer getErrorCode() {

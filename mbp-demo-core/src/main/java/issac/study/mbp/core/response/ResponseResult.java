@@ -25,11 +25,7 @@ public class ResponseResult implements ErrorCodeConstant {
     private Object data;
 
     public static ResponseResult success() {
-        ResponseResult responseResult = new ResponseResult();
-        responseResult.setSuccess(true);
-        responseResult.setErrorCode(DEFAULT_SUCCESS_ERROR_CODE);
-        responseResult.setMsg(DEFAULT_SUCCESS_MSG);
-        return responseResult;
+        return success(null);
     }
 
     public static ResponseResult success(Object data) {
@@ -41,6 +37,9 @@ public class ResponseResult implements ErrorCodeConstant {
         return responseResult;
     }
 
+    public static ResponseResult fail(String msg) {
+        return fail(DEFAULT_FAIL_ERROR_CODE, msg);
+    }
 
     public static ResponseResult fail(Integer errorCode, String msg) {
         ResponseResult responseResult = new ResponseResult();
@@ -49,14 +48,5 @@ public class ResponseResult implements ErrorCodeConstant {
         responseResult.setMsg(msg);
         return responseResult;
     }
-
-    public static ResponseResult fail(String msg) {
-        ResponseResult responseResult = new ResponseResult();
-        responseResult.setSuccess(false);
-        responseResult.setErrorCode(DEFAULT_FAIL_ERROR_CODE);
-        responseResult.setMsg(msg);
-        return responseResult;
-    }
-
 
 }

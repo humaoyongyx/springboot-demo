@@ -18,12 +18,12 @@ public class BusinessRuntimeException extends RuntimeException implements ErrorC
         return new BusinessRuntimeException(errorCode.getErrorCode(), errorCode.getMsg());
     }
 
-    public static BusinessRuntimeException errorCode(int errorCode, String msg) {
-        return new BusinessRuntimeException(errorCode, msg);
+    public static BusinessRuntimeException error(String msg) {
+        return errorCode(DEFAULT_FAIL_ERROR_CODE, msg);
     }
 
-    public static BusinessRuntimeException error(String msg) {
-        return new BusinessRuntimeException(DEFAULT_FAIL_ERROR_CODE, msg);
+    public static BusinessRuntimeException errorCode(int errorCode, String msg) {
+        return new BusinessRuntimeException(errorCode, msg);
     }
 
     private BusinessRuntimeException(int errorCode, String msg) {
