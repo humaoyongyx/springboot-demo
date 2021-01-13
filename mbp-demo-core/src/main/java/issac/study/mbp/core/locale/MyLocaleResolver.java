@@ -1,7 +1,7 @@
 package issac.study.mbp.core.locale;
 
 
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
@@ -24,20 +24,18 @@ public class MyLocaleResolver implements LocaleResolver {
     public Locale resolveLocale(HttpServletRequest request) {
         String lang = request.getParameter(LOCALE);
         //默认locale中文_大陆
-        Locale locale = Locale.CHINA;
-        if (StringUtils.isNotBlank(lang)) {
+        if (StringUtils.hasText(lang)) {
             try {
-                locale = org.springframework.util.StringUtils.parseLocale(lang);
+                Locale locale = StringUtils.parseLocale(lang);
+                return locale;
             } catch (Exception e) {
-                //解析不出将会使用默认的Locale.CHINA
-                locale = Locale.CHINA;
+
             }
-            return locale;
-        } else {
-            AcceptHeaderLocaleResolver acceptHeaderLocaleResolver = new AcceptHeaderLocaleResolver();
-            acceptHeaderLocaleResolver.setDefaultLocale(locale);
-            return acceptHeaderLocaleResolver.resolveLocale(request);
         }
+        AcceptHeaderLocaleResolver acceptHeaderLocaleResolver = new AcceptHeaderLocaleResolver();
+        //如果解析不出，最终的默认locale为Locale.CHINA
+        acceptHeaderLocaleResolver.setDefaultLocale(Locale.CHINA);
+        return acceptHeaderLocaleResolver.resolveLocale(request);
     }
 
     @Override
