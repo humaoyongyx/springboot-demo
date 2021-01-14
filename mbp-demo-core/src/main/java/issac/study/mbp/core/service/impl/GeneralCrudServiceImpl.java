@@ -311,7 +311,7 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
             Set<ConstraintViolation<Object>> validate = validator.validate(req);
             if (!validate.isEmpty()) {
                 ConstraintViolation<Object> next = validate.iterator().next();
-                String msg = MessageUtils.get("mbp.core.validate", next.getPropertyPath(), next.getInvalidValue(), next.getMessage());
+                String msg = MessageUtils.get("core.validate.bind.exception", next.getPropertyPath(), next.getInvalidValue(), next.getMessage());
                 throw new ValidationException(msg);
             }
         }

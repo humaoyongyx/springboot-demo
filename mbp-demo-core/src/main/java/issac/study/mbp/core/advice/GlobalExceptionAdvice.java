@@ -45,7 +45,7 @@ public class GlobalExceptionAdvice {
     public ResponseResult bindException(BindException e) {
         FieldError fieldError = e.getBindingResult().getFieldError();
         LOGGER.error("global BindException:", e);
-        String msg = MessageUtils.get("mbp.core.validate", fieldError.getField(), fieldError.getRejectedValue(), fieldError.getDefaultMessage());
+        String msg = MessageUtils.get("core.validate.bind.exception", fieldError.getField(), fieldError.getRejectedValue(), fieldError.getDefaultMessage());
         return ResponseResult.fail(msg);
     }
 

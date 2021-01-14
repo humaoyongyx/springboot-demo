@@ -1,8 +1,10 @@
 package issac.study.mbp.core.converter;
 
+import issac.study.mbp.core.locale.MessageUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.convert.converter.Converter;
 
+import javax.validation.ValidationException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -36,8 +38,8 @@ public class DateConverter implements Converter<String, Date> {
                 return new Date(lDate);
             }
         } catch (Exception e) {
-            throw new RuntimeException("日期格式不正确");
+            throw new ValidationException(MessageUtils.get("core.validate.date"));
         }
-        throw new RuntimeException("日期格式不正确");
+        throw new ValidationException(MessageUtils.get("core.validate.date"));
     }
 }
