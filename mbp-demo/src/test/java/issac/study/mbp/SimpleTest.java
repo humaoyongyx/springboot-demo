@@ -2,8 +2,8 @@ package issac.study.mbp;
 
 
 import issac.study.mbp.base.BaseServiceTest;
-import issac.study.mbp.config.DConf;
-import issac.study.mbp.core.config.DynamicConfig;
+import issac.study.mbp.config.MyConfig;
+import issac.study.mbp.core.builder.DConfBuilder;
 import org.junit.Test;
 
 /**
@@ -11,11 +11,11 @@ import org.junit.Test;
  */
 public class SimpleTest extends BaseServiceTest {
 
-    DConf dConf = DynamicConfig.get(DConf.class);
+    MyConfig myConfig = DConfBuilder.get(MyConfig.class);
 
     @Test
     public void test() {
-        System.out.println(dConf.getHello());
+        System.out.println(myConfig.getHello());
     }
 
 }

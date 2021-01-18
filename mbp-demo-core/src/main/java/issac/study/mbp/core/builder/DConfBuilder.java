@@ -1,4 +1,4 @@
-package issac.study.mbp.core.config;
+package issac.study.mbp.core.builder;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -31,12 +31,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * 从主数据库获取config表的配置key-value信息
  */
 @Service
-public class DynamicConfig {
+public class DConfBuilder {
 
     public static final String GET = "get";
     public static final String SET = "set";
 
-    private static Logger logger = LoggerFactory.getLogger(DynamicConfig.class);
+    private static Logger logger = LoggerFactory.getLogger(DConfBuilder.class);
 
     private static ConfigMapper configMapper;
 
@@ -48,7 +48,7 @@ public class DynamicConfig {
 
     @Autowired
     public void setConfigRepository(ConfigMapper configRepository) {
-        DynamicConfig.configMapper = configRepository;
+        DConfBuilder.configMapper = configRepository;
         refresh();
     }
 
@@ -69,7 +69,7 @@ public class DynamicConfig {
 
     @Autowired
     public void setEnvironment(Environment environment) {
-        DynamicConfig.environment = environment;
+        DConfBuilder.environment = environment;
     }
 
     public static String getConfigCacheKey(String key) {
@@ -112,7 +112,7 @@ public class DynamicConfig {
      */
     public static <T> T get(String key, boolean fetchSpringConfigWhenCacheIsNull, T defaultValue, Class tClass) {
         String configCacheKey = getConfigCacheKey(key);
-        String cache = DynamicConfig.CONFIG_CACHE.get(configCacheKey);
+        String cache = DConfBuilder.CONFIG_CACHE.get(configCacheKey);
         Class clazz = tClass;
         if (defaultValue != null) {
             clazz = defaultValue.getClass();
