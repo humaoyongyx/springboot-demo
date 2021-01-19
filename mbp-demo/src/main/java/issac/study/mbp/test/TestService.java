@@ -21,7 +21,7 @@ public class TestService implements MyAware, InitializingBean {
 
     @Autowired
     public void setBeanFactory(BeanFactory beanFactory) {
-        System.out.println("property");
+        System.out.println("property(populate bean)");
         this.beanFactory = beanFactory;
     }
 
@@ -45,7 +45,7 @@ public class TestService implements MyAware, InitializingBean {
 
     @Override
     public void setString(String value) {
-        System.out.println("aware");
+        System.out.println(value);
     }
 
     @Override

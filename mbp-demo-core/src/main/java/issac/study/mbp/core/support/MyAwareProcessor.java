@@ -13,7 +13,15 @@ public class MyAwareProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof MyAware) {
-            ((MyAware) bean).setString("hello world!");
+            ((MyAware) bean).setString("aware(BeanPostProcessor) before");
+        }
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        if (bean instanceof MyAware) {
+            ((MyAware) bean).setString("aware(BeanPostProcessor) after");
         }
         return bean;
     }
