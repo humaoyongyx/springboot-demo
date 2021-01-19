@@ -24,6 +24,7 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
@@ -70,7 +71,9 @@ public class DynamicConfigRegistrar implements ImportBeanDefinitionRegistrar, Be
         if (beanFactory instanceof DefaultListableBeanFactory) {
             SingletonBeanRegistry singletonBeanRegistry = (SingletonBeanRegistry) beanFactory;
             for (Class candidateClass : candidateClasses) {
-                singletonBeanRegistry.registerSingleton(candidateClass.getName(), DConfBuilder.getFromDb(candidateClass));
+                // singletonBeanRegistry.registerSingleton(candidateClass.getName(), DConfBuilder.getFromDb(candidateClass));
+                //todo 这里可以在注解里面增加一个value
+                singletonBeanRegistry.registerSingleton(StringUtils.uncapitalize(candidateClass.getSimpleName()), DConfBuilder.getFromDb(candidateClass));
             }
         }
     }
