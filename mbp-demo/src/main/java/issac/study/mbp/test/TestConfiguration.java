@@ -9,8 +9,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TestConfiguration {
 
-    @Bean(initMethod = "initMethod",destroyMethod = "destroyMethod")
+    @Bean(initMethod = "initMethod", destroyMethod = "destroyMethod")
     public TestService testService() {
+        System.out.println("@Configuration @bean method");
         return new TestService();
     }
 }

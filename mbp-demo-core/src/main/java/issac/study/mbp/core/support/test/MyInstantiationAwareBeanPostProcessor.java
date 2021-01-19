@@ -1,5 +1,6 @@
-package issac.study.mbp.core.support;
+package issac.study.mbp.core.support.test;
 
+import issac.study.mbp.core.support.MyAware;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyValues;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;

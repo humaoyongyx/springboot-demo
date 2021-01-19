@@ -1,4 +1,4 @@
-package issac.study.mbp.core.support;
+package issac.study.mbp.core.support.test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
