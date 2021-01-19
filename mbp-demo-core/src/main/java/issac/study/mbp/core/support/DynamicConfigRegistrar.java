@@ -4,11 +4,7 @@ import issac.study.mbp.core.annotation.DConf;
 import issac.study.mbp.core.annotation.EnableDConf;
 import issac.study.mbp.core.builder.DConfBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.EnvironmentAware;
@@ -37,13 +33,12 @@ import java.util.Set;
  * @author issac.hu
  */
 @Slf4j
-public class DynamicConfigRegistrar implements ImportBeanDefinitionRegistrar, BeanFactoryAware, EnvironmentAware, ResourceLoaderAware {
+public class DynamicConfigRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware {
     static final String DEFAULT_RESOURCE_PATTERN = "**/*.class";
     private String resourcePattern = DEFAULT_RESOURCE_PATTERN;
     private Environment environment;
     private ResourcePatternResolver resourcePatternResolver;
     private MetadataReaderFactory metadataReaderFactory;
-    private BeanFactory beanFactory;
 
     /**
      * 这个方法没被@import一次，就会被调用一次，也即被@EnableDConf注解的@configuration配置类，会被调用多次
@@ -68,13 +63,11 @@ public class DynamicConfigRegistrar implements ImportBeanDefinitionRegistrar, Be
         }
         //扫描@DConf注解
         Set<Class> candidateClasses = scan(basePackages);
-        if (beanFactory instanceof DefaultListableBeanFactory) {
-            SingletonBeanRegistry singletonBeanRegistry = (SingletonBeanRegistry) beanFactory;
-            for (Class candidateClass : candidateClasses) {
-                // singletonBeanRegistry.registerSingleton(candidateClass.getName(), DConfBuilder.getFromDb(candidateClass));
-                //todo 这里可以在注解里面增加一个value
-                singletonBeanRegistry.registerSingleton(StringUtils.uncapitalize(candidateClass.getSimpleName()), DConfBuilder.getFromDb(candidateClass));
-            }
+        DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) registry;
+        for (Class candidateClass : candidateClasses) {
+            // singletonBeanRegistry.registerSingleton(candidateClass.getName(), DConfBuilder.getFromDb(candidateClass));
+            //todo 这里可以在注解里面增加一个value
+            defaultListableBeanFactory.registerSingleton(StringUtils.uncapitalize(candidateClass.getSimpleName()), DConfBuilder.getFromDb(candidateClass));
         }
     }
 
@@ -128,8 +121,4 @@ public class DynamicConfigRegistrar implements ImportBeanDefinitionRegistrar, Be
         this.metadataReaderFactory = new CachingMetadataReaderFactory(resourceLoader);
     }
 
-    @Override
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
-    }
 }
