@@ -21,6 +21,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Configuration注解上如果有@import的注解或父类被@import的注解 见:{@link issac.study.mbp.core.annotation.EnableDConf}，会进入此类
@@ -33,7 +34,7 @@ public class DynamicConfigRegistrar implements ImportBeanDefinitionRegistrar, En
     public static final String VALUE = "value";
 
     public static final String BASE_PACKAGES = "basePackages";
-    
+
     public static final String TARGET_CLASS = "targetClass";
 
     private Environment environment;
@@ -72,13 +73,14 @@ public class DynamicConfigRegistrar implements ImportBeanDefinitionRegistrar, En
         String[] value = attributes.getStringArray(VALUE);
         String[] basePackages = attributes.getStringArray(BASE_PACKAGES);
         Set<String> packages = new HashSet<>();
-        if (value.length == 0 && basePackages.length == 0) {
+        packages.addAll(Arrays.stream(value).filter(StringUtils::hasText)
+                .collect(Collectors.toList()));
+        packages.addAll(Arrays.stream(basePackages).filter(StringUtils::hasText)
+                .collect(Collectors.toList()));
+        if (packages.isEmpty()) {
             String className = importingClassMetadata.getClassName();
             packages.add(ClassUtils.getPackageName(className));
-            return packages;
         }
-        packages.addAll(Arrays.asList(value));
-        packages.addAll(Arrays.asList(basePackages));
         return packages;
     }
 
