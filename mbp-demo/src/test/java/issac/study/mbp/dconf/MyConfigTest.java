@@ -20,6 +20,8 @@ public class MyConfigTest {
 
     @Test
     public void test() {
-        System.out.println(!"admin1!A".matches(myConfig.getPassword()));
+        String password = myConfig.getPassword();
+        System.out.println(password);
+        System.out.println(!"admin1!A".matches(password));
     }
 }
