@@ -4,9 +4,11 @@ import issac.study.mbp.core.support.MyAware;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.List;
 
 /**
  * @author issac.hu
@@ -21,8 +23,10 @@ public class TestService implements MyAware, InitializingBean {
 
     @Autowired
     public void setBeanFactory(BeanFactory beanFactory) {
-        System.out.println("property(populate bean)");
+        System.out.println("@Autowired property(populate bean)");
         this.beanFactory = beanFactory;
+        List<String> packages = AutoConfigurationPackages.get(this.beanFactory);
+        System.out.println(packages);
     }
 
     public void initMethod() {
