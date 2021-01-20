@@ -30,6 +30,12 @@ import java.util.*;
 @Slf4j
 public class DynamicConfigRegistrar implements ImportBeanDefinitionRegistrar, EnvironmentAware, ResourceLoaderAware {
 
+    public static final String VALUE = "value";
+
+    public static final String BASE_PACKAGES = "basePackages";
+    
+    public static final String TARGET_CLASS = "targetClass";
+
     private Environment environment;
 
     private ResourceLoader resourceLoader;
@@ -50,12 +56,12 @@ public class DynamicConfigRegistrar implements ImportBeanDefinitionRegistrar, En
             //设置bean的名称,如果设置value就是value的值，否则就是类的全路径名称
             String value = null;
             if (definition instanceof AnnotatedBeanDefinition) {
-                value = (String) ((AnnotatedBeanDefinition) definition).getMetadata().getAnnotationAttributes(DConf.class.getName()).get("value");
+                value = (String) ((AnnotatedBeanDefinition) definition).getMetadata().getAnnotationAttributes(DConf.class.getName()).get(VALUE);
             }
             String beanName = StringUtils.hasText(value) ? value : definition.getBeanClassName();
             GenericBeanDefinition genericBeanDefinition = new GenericBeanDefinition();
             genericBeanDefinition.setBeanClass(DConfFactory.class);
-            genericBeanDefinition.getPropertyValues().add("targetClass", definition.getBeanClassName());
+            genericBeanDefinition.getPropertyValues().add(TARGET_CLASS, definition.getBeanClassName());
             registry.registerBeanDefinition(beanName, genericBeanDefinition);
         }
     }
@@ -63,8 +69,8 @@ public class DynamicConfigRegistrar implements ImportBeanDefinitionRegistrar, En
     private Set<String> getScanPackages(AnnotationMetadata importingClassMetadata) {
         Map<String, Object> annotationAttributes = importingClassMetadata.getAnnotationAttributes(EnableDConf.class.getName());
         AnnotationAttributes attributes = new AnnotationAttributes(annotationAttributes);
-        String[] value = attributes.getStringArray("value");
-        String[] basePackages = attributes.getStringArray("basePackages");
+        String[] value = attributes.getStringArray(VALUE);
+        String[] basePackages = attributes.getStringArray(BASE_PACKAGES);
         Set<String> packages = new HashSet<>();
         if (value.length == 0 && basePackages.length == 0) {
             String className = importingClassMetadata.getClassName();
