@@ -38,15 +38,32 @@ public class ResponseResult implements ErrorCodeConstant {
         return responseResult;
     }
 
-    public static ResponseResult fail(String msg, Object... i18nArgs) {
-        return fail(DEFAULT_FAIL_ERROR_CODE, msg, i18nArgs);
+    public static ResponseResult fail(String msg) {
+        return fail(DEFAULT_FAIL_ERROR_CODE, msg);
     }
 
-    public static ResponseResult fail(Integer errorCode, String msg, Object... i18nArgs) {
+    public static ResponseResult fail(Integer errorCode, String msg) {
+        return fail(errorCode, msg, false);
+    }
+
+    public static ResponseResult failI18n(String msg, Object... i18nArgs) {
+        return fail(DEFAULT_FAIL_ERROR_CODE, msg, true, i18nArgs);
+    }
+
+    public static ResponseResult failI18n(Integer errorCode, String msg, Object... i18nArgs) {
+        return fail(errorCode, msg, true, i18nArgs);
+    }
+
+    public static ResponseResult fail(Integer errorCode, String msg, boolean i18n, Object... i18nArgs) {
         ResponseResult responseResult = new ResponseResult();
         responseResult.setSuccess(false);
         responseResult.setErrorCode(errorCode);
-        responseResult.setMsg(MessageUtils.getOrElseReturnKey(msg, i18nArgs));
+        if (i18n) {
+            responseResult.setMsg(MessageUtils.getOrElseReturnKey(msg, i18nArgs));
+        } else {
+            responseResult.setMsg(msg);
+        }
+
         return responseResult;
     }
 

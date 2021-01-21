@@ -2,7 +2,6 @@ package issac.study.mbp.core.advice;
 
 import issac.study.mbp.core.exception.BusinessRuntimeException;
 import issac.study.mbp.core.exception.Error404RuntimeException;
-import issac.study.mbp.core.locale.MessageUtils;
 import issac.study.mbp.core.response.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +30,7 @@ public class GlobalExceptionAdvice {
     @ExceptionHandler(Exception.class)
     public ResponseResult exception(Exception e) {
         LOGGER.error("global ex:", e);
-        return ResponseResult.fail("core.system.error");
+        return ResponseResult.failI18n("core.system.error");
     }
 
     /**
@@ -46,8 +45,7 @@ public class GlobalExceptionAdvice {
     public ResponseResult bindException(BindException e) {
         FieldError fieldError = e.getBindingResult().getFieldError();
         LOGGER.error("global BindException:", e);
-        String msg = MessageUtils.get("core.validate.bind.exception", fieldError.getField(), fieldError.getRejectedValue(), fieldError.getDefaultMessage());
-        return ResponseResult.fail(msg);
+        return ResponseResult.failI18n("core.validate.bind.exception", fieldError.getField(), fieldError.getRejectedValue(), fieldError.getDefaultMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -95,7 +93,7 @@ public class GlobalExceptionAdvice {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseResult httpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         LOGGER.error("global HttpRequestMethodNotSupportedException:", e);
-        return ResponseResult.fail("core.validate.method.not.supported", e.getMethod());
+        return ResponseResult.failI18n("core.validate.method.not.supported", e.getMethod());
     }
 
 }
