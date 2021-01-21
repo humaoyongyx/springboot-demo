@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -30,7 +31,7 @@ public class GlobalExceptionAdvice {
     @ExceptionHandler(Exception.class)
     public ResponseResult exception(Exception e) {
         LOGGER.error("global ex:", e);
-        return ResponseResult.fail("系统异常，请联系管理员！");
+        return ResponseResult.fail("core.system.error");
     }
 
     /**
@@ -82,6 +83,19 @@ public class GlobalExceptionAdvice {
     @ExceptionHandler(Error404RuntimeException.class)
     public ResponseResult error404RuntimeException(Error404RuntimeException e) {
         return ResponseResult.fail(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+    }
+
+    /**
+     * 接口 method不支持，会报错
+     *
+     * @param e
+     * @return
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseResult httpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        LOGGER.error("global HttpRequestMethodNotSupportedException:", e);
+        return ResponseResult.fail("core.validate.method.not.supported", e.getMethod());
     }
 
 }

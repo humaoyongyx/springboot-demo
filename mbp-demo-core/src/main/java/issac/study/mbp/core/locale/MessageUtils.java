@@ -34,4 +34,19 @@ public class MessageUtils {
     public static String get(String key, Object... args) {
         return messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
     }
+
+    /**
+     * 获取不到message就返回默认值
+     *
+     * @param key
+     * @param args
+     * @return
+     */
+    public static String getOrElseReturnKey(String key, Object... args) {
+        try {
+            return get(key, args);
+        } catch (Exception e) {
+            return key;
+        }
+    }
 }
