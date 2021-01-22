@@ -14,7 +14,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import java.lang.reflect.AnnotatedElement;
 
 /**
- * 注解自动加返回体
+ * 实现了ResponseBodyAdvice的接口，可以处理@ResponseBody在写入之之前，来更改body的value
+ * 类似的还有RequestBodyAdvice，可以处理@RequestBody在读入前，来更改body的value
  *
  * @author issac
  */
