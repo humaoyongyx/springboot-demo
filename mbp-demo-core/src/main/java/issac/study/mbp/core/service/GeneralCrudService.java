@@ -43,10 +43,10 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
      * 更新实体，不做任何验证
      *
      * @param model
-     * @param includeNullValue 是否包含null值
+     * @param includeEmptyValue 是否包含非空值，对于string是非空，对于其他类型是null
      * @return
      */
-    T updateModel(T model, boolean includeNullValue);
+    T updateModel(T model, boolean includeEmptyValue);
 
     /**
      * 单条更新且获取更新后的值
@@ -60,10 +60,10 @@ public interface GeneralCrudService<T extends GeneralModel, V> extends IService<
      * 单条更新且获取更新后的值
      *
      * @param baseReq
-     * @param includeNullValue 是否包含null值
+     * @param includeEmptyValue 是否包含非空值，对于string是非空，对于其他类型是null
      * @return
      */
-    V update(BaseReq baseReq, boolean includeNullValue);
+    V update(BaseReq baseReq, boolean includeEmptyValue);
 
     /**
      * 分页

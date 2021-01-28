@@ -123,7 +123,18 @@ public class ConvertUtils {
     }
 
     /**
-     * copy非null值属性,支持属性的类型不相同
+     * copy非空值属性，对于string是非空，对于其他类型是null
+     *
+     * @param source
+     * @param target
+     */
+    public static void copyNotEmptyProperties(Object source, Object target) {
+        source = setBlankStringFieldToNull(source);
+        BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+    }
+
+    /**
+     * copy非null值属性
      *
      * @param source
      * @param target
@@ -132,24 +143,14 @@ public class ConvertUtils {
         BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
     }
 
-    /**
-     * copy非空值属性,支持属性的类型不相同
-     *
-     * @param source
-     * @param target
-     */
-    public static void copyNotBlankProperties(Object source, Object target) {
-        source = setBlankStringFieldToNull(source);
-        BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
-    }
 
     /**
-     * copy属性，包括null
+     * copy名称和类型相同的属性
      *
      * @param source
      * @param target
      */
-    public static void copyWithNullProperties(Object source, Object target) {
+    public static void copyProperties(Object source, Object target) {
         BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreError(true));
     }
 

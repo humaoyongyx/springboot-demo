@@ -41,10 +41,10 @@ public interface BaseTreeCrudService<T extends BaseTreeModel, V> extends BaseCru
      * 单条更新树形对象
      *
      * @param baseTreeReq
-     * @param includeNullValue 是否包括null值
+     * @param includeEmptyValue 是否包含非空值，对于string是非空，对于其他类型是null
      * @return
      */
-    V update(BaseTreeReq baseTreeReq, boolean includeNullValue);
+    V update(BaseTreeReq baseTreeReq, boolean includeEmptyValue);
 
     /**
      * 根据id删除树形对象

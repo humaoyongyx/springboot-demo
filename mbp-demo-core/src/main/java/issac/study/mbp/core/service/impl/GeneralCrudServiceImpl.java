@@ -124,12 +124,12 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
     }
 
     @Override
-    public T updateModel(T model, boolean includeNullValue) {
+    public T updateModel(T model, boolean includeEmptyValue) {
         T db = getBaseMapper().selectById(model.getId());
-        if (includeNullValue) {
-            ConvertUtils.copyWithNullProperties(model, db);
+        if (includeEmptyValue) {
+            ConvertUtils.copyProperties(model, db);
         } else {
-            ConvertUtils.copyNotNullProperties(model, db);
+            ConvertUtils.copyNotEmptyProperties(model, db);
         }
         db = commonUpdate(db);
         getBaseMapper().updateById(db);
@@ -143,14 +143,14 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
 
     @CachePut(value = "mbp:cache", key = "targetClass+''+#result.id", condition = "target.cacheable()")
     @Override
-    public V update(BaseReq baseReq, boolean includeNullValue) {
-        T db = checkReqForUpdate(baseReq, includeNullValue);
+    public V update(BaseReq baseReq, boolean includeEmptyValue) {
+        T db = checkReqForUpdate(baseReq, includeEmptyValue);
         db = commonUpdate(db);
         getBaseMapper().updateById(db);
         return ConvertUtils.convertObject(db, voClass);
     }
 
-    protected T checkReqForUpdate(BaseReq baseReq, boolean includeNullValue) {
+    protected T checkReqForUpdate(BaseReq baseReq, boolean includeEmptyValue) {
         Objects.requireNonNull(baseReq, "更新的对象不能为空");
         if (baseReq.getId() == null) {
             throw BusinessRuntimeException.error("id不能为空");
@@ -159,10 +159,10 @@ public class GeneralCrudServiceImpl<M extends BaseMapper<T>, T extends GeneralMo
         if (db == null) {
             throw BusinessRuntimeException.error("更新的数据不存在");
         }
-        if (includeNullValue) {
-            ConvertUtils.copyWithNullProperties(baseReq, db);
+        if (includeEmptyValue) {
+            ConvertUtils.copyProperties(baseReq, db);
         } else {
-            ConvertUtils.copyNotNullProperties(baseReq, db);
+            ConvertUtils.copyNotEmptyProperties(baseReq, db);
         }
         return db;
     }

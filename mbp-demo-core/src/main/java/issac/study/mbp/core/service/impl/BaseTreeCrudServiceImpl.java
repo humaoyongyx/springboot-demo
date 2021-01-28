@@ -71,15 +71,15 @@ public class BaseTreeCrudServiceImpl<M extends BaseTreeMapper<T>, T extends Base
     }
 
     @Override
-    public V update(BaseTreeReq baseTreeReq, boolean includeNullValue) {
+    public V update(BaseTreeReq baseTreeReq, boolean includeEmptyValue) {
         removeNotNeedValue(baseTreeReq);
         Integer parentId = baseTreeReq.getParentId();
         //清除此值，防止被copy到db对象中
         baseTreeReq.setParentId(null);
         if (parentId == null) {
-            return super.update(baseTreeReq, includeNullValue);
+            return super.update(baseTreeReq, includeEmptyValue);
         } else {
-            T dbForUpdate = checkReqForUpdate(baseTreeReq, includeNullValue);
+            T dbForUpdate = checkReqForUpdate(baseTreeReq, includeEmptyValue);
             //parentId 相同只需更改内容
             if (dbForUpdate.getParentId() != null && (dbForUpdate.getParentId() == parentId.intValue())) {
                 this.updateById(dbForUpdate);
