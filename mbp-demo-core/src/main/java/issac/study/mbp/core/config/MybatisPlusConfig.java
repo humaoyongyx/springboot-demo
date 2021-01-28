@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * MapperScan扫描mapper接口
+ *
  * @author issac.hu
  */
 @Configuration

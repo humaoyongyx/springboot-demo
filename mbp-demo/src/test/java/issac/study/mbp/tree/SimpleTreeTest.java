@@ -3,11 +3,14 @@ package issac.study.mbp.tree;
 
 import issac.study.mbp.base.BaseServiceTest;
 import issac.study.mbp.core.utils.ConvertUtils;
+import issac.study.mbp.model.OrganizationModel;
 import issac.study.mbp.req.OrganizationReq;
 import issac.study.mbp.service.OrganizationService;
 import issac.study.mbp.vo.OrganizationVo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * @author issac.hu
@@ -57,11 +60,17 @@ public class SimpleTreeTest extends BaseServiceTest {
     @Test
     public void testUpdate() {
         OrganizationReq organizationReq = new OrganizationReq();
-        organizationReq.setName("update");
-        organizationReq.setId(45);
-        organizationReq.setParentId(43);
-        organizationReq.setDeeper(true);
-        OrganizationVo update = organizationService.update(organizationReq);
+        organizationReq.setName("null");
+        organizationReq.setId(74);
+        OrganizationVo update = organizationService.update(organizationReq, true);
         System.out.println(ConvertUtils.toJsonString(update, true));
+
     }
+
+    @Test
+    public void testGetAll() {
+        List<OrganizationModel> organizationModels = organizationService.getBaseMapper().selectList(null);
+        System.out.println(ConvertUtils.toJsonString(organizationModels, true));
+    }
+
 }

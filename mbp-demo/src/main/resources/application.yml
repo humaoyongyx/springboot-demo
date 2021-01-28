@@ -26,7 +26,12 @@ mybatis-plus:
     auto-mapping-behavior: full # 开启自动映射
     map-underscore-to-camel-case: true # 下划线转驼峰
   type-aliases-package: issac.study.mbp.**.model #扫描表映射的类，默认是自动加下划线
-  mapper-locations: classpath*:issac.study.mbp.**.mapper #classpath* 表示包括jar包内的类路径
+  mapper-locations: classpath*:/issac/study/mbp/**/mapper/*.xml #classpath* 表示包括jar包内的类路径
+  global-config:
+    db-config:
+      update-strategy: ignored  # 更新的时候，是否判断null或者empty，不判断
+      insert-strategy: ignored  # 插入的时候，是否判断null或者empty，不判断
+      select-strategy: ignored  # query查询的时候，是否判断null或者empty，不判断
 my:
   config:
     my-enum: item1
