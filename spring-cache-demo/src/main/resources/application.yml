@@ -5,7 +5,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
-    url: jdbc:mysql://192.168.99.3:3306/test?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai #添加时区
+    url: jdbc:mysql://192.168.6.128:3306/test?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai #添加时区
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,10 +15,11 @@ spring:
     show-sql: true #显示sql
     properties:
       hibernate.format_sql: true #格式化sql输出
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect # 默认是myIsam
   cache:
     type: redis
   redis:
-    host: 192.168.99.3
+    host: 192.168.6.128
     port: 6379
     timeout: 10000
     maxIdle: 200
