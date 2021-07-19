@@ -30,7 +30,7 @@ public class TestZk {
             zkClient.createPersistent(rootPath);
         }
 
-        //列出根下所有节点
+        //列出根下所有节点GG
         List<String> list = zkClient.getChildren(rootPath);
 
         for (String node : list) {

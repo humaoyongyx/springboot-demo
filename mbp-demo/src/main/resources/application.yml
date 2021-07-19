@@ -3,12 +3,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
-    url: jdbc:mysql://127.0.1:3306/test?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai #添加时区
+    url: jdbc:mysql://192.168.6.129:3306/test?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai #添加时区
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8 # 设置返回json的日期格式
   redis:
-    host: 127.0.0.1
+    host: 192.168.6.129
     port: 6379
     timeout: 10000
     maxIdle: 200
@@ -19,6 +19,18 @@ spring:
     multipart:
       max-file-size: 300MB  #设置上传文件的大小设置
       max-request-size: 500MB
+  mail:
+    default-encoding: utf-8
+    host: smtp.qq.com
+    username: ahkakaxi@qq.com
+    password:
+    port: 587
+    properties:
+      mail:
+        smtp:
+          socketFactoryClass: javax.net.ssl.SSLSocketFactory
+        #表示开启 DEBUG 模式，这样，邮件发送过程的日志会在控制台打印出来，方便排查错误
+        debug: true
 
 mybatis-plus:
   configuration:
