@@ -23,7 +23,7 @@ spring:
     default-encoding: utf-8
     host: smtp.qq.com
     username: ahkakaxi@qq.com
-    password:
+    password: muexsxhyqqphbcdi
     port: 587
     properties:
       mail:
