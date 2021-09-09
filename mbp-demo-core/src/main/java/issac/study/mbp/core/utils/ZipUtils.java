@@ -1,14 +1,6 @@
 package issac.study.mbp.core.utils;
 
-import org.springframework.core.io.InputStreamResource;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -16,6 +8,7 @@ import java.util.zip.ZipOutputStream;
  * 此工具，压缩文件输出目录最好不要和被压缩文件在同一个目录，因为多线程下可能会出现问题
  */
 public class ZipUtils {
+
     /**
      * 压缩文件
      *
@@ -40,7 +33,14 @@ public class ZipUtils {
     }
 
 
-    public static void doZip(String sourceDir,OutputStream outputStream) throws Exception {
+    /**
+     * 这种方式，下载速度快，但是迅雷下载有问题
+     *
+     * @param sourceDir
+     * @param outputStream
+     * @throws Exception
+     */
+    public static void doZip(String sourceDir, OutputStream outputStream) throws Exception {
         BufferedOutputStream bos = new BufferedOutputStream(outputStream);
         ZipOutputStream zos = new ZipOutputStream(bos);
         File file = new File(sourceDir);
@@ -53,6 +53,30 @@ public class ZipUtils {
         zipFile(file, basePath, zos);
         zos.closeEntry();
         zos.close();
+    }
+
+
+    /**
+     * 效率很低，可以结合SpringResponseUtils使用
+     *
+     * @param sourceDir
+     * @return
+     * @throws Exception
+     */
+    public static byte[] doZip(String sourceDir) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        File file = new File(sourceDir);
+        String basePath = null;
+        if (file.isDirectory()) {
+            basePath = file.getPath();
+        } else {
+            basePath = file.getParent();
+        }
+        zipFile(file, basePath, zos);
+        zos.closeEntry();
+        zos.close();
+        return baos.toByteArray();
     }
 
     private static void zipFile(File source, String basePath, ZipOutputStream zos) throws Exception {

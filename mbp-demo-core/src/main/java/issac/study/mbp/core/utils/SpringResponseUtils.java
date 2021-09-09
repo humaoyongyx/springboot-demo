@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 
@@ -58,5 +59,19 @@ public class SpringResponseUtils {
         //兼容 RFC 5987
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + encodeFileName + ";filename*=utf-8''" + encodeFileName);
         return ResponseEntity.ok().headers(headers).contentLength(contentLength).contentType(MediaType.parseMediaType("application/octet-stream")).body(inputStreamResource);
+    }
+
+    public static void setResponse(HttpServletResponse response, String fileName) {
+        response.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+        response.setHeader(HttpHeaders.PRAGMA, "no-cache");
+        response.setHeader(HttpHeaders.EXPIRES, "0");
+        response.setContentType("application/octet-stream");
+        String encodeFileName = null;
+        try {
+            encodeFileName = URLEncoder.encode(fileName, "UTF-8");// 编码解决乱码问题
+        } catch (UnsupportedEncodingException e) {
+            //ignore
+        }
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + encodeFileName + ";filename*=utf-8''" + encodeFileName);
     }
 }
