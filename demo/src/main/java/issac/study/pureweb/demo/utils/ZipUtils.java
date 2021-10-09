@@ -1,8 +1,8 @@
 package issac.study.pureweb.demo.utils;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -34,6 +34,18 @@ public class ZipUtils {
         zos.close();
     }
 
+    /**
+     * 支持多个目录或者文件压缩
+     *
+     * @param sourceDirs
+     * @param zipFile
+     * @throws Exception
+     */
+    public static void doZip(List<String> sourceDirs, File zipFile) throws Exception {
+        OutputStream os = new FileOutputStream(zipFile);
+        BufferedOutputStream bos = new BufferedOutputStream(os);
+        doZip(sourceDirs, bos);
+    }
 
     /**
      * 这种方式，下载速度快，但是迅雷下载有问题
@@ -57,9 +69,22 @@ public class ZipUtils {
         zos.close();
     }
 
+    /**
+     * 这种方式，下载速度快，但是迅雷下载有问题
+     *
+     * @param sourceDirs
+     * @param outputStream
+     * @throws Exception
+     */
+    public static void doZip(List<String> sourceDirs, OutputStream outputStream) throws Exception {
+        BufferedOutputStream bos = new BufferedOutputStream(outputStream);
+        ZipOutputStream zos = new ZipOutputStream(bos);
+        zipFiles(sourceDirs, zos);
+    }
+
 
     /**
-     * 效率很低，可以结合SpringResponseUtils使用
+     * 效率很低，但是迅雷和浏览器都可以下载，可以结合SpringResponseUtils使用
      *
      * @param sourceDir
      * @return
@@ -79,6 +104,38 @@ public class ZipUtils {
         zos.closeEntry();
         zos.close();
         return baos.toByteArray();
+    }
+
+    /**
+     * 支持多个目录或者文件压缩
+     *
+     * @param sourceDirs
+     * @return
+     * @throws Exception
+     */
+    public static byte[] doZip(List<String> sourceDirs) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+        zipFiles(sourceDirs, zos);
+        return baos.toByteArray();
+    }
+
+    private static void zipFiles(List<String> sourceDirs, ZipOutputStream zos) throws Exception {
+        for (String sourceDir : sourceDirs) {
+            File file = new File(sourceDir);
+            if (!file.exists()) {
+                continue;
+            }
+            String basePath = null;
+            if (file.isDirectory()) {
+                basePath = file.getPath();
+            } else {
+                basePath = file.getParent();
+            }
+            zipFile(file, basePath, zos);
+        }
+        zos.closeEntry();
+        zos.close();
     }
 
     private static void zipFile(File source, String basePath, ZipOutputStream zos) throws Exception {
@@ -152,7 +209,7 @@ public class ZipUtils {
     }
 
 //    public static void main(String[] args) throws Exception {
-//        ZipUtils.doZip("D:\\release", new File("D:\\release\\test.zip"));
+//        ZipUtils.doZip(Arrays.asList("D:\\test\\test.txt", "D:\\test\\test\\1.txt","D:\\release"), new File("D:\\tmp\\test.zip"));
 //    }
 
 }
