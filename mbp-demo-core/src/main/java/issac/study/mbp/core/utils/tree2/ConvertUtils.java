@@ -1,0 +1,383 @@
+package issac.study.mbp.core.utils.tree2;
+
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.PropertyFilter;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import issac.study.mbp.core.utils.ReflectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+/**
+ * @author issac.hu
+ */
+public class ConvertUtils {
+
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    private static SimpleDateFormat getSimpleDateFormat() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    }
+
+    /**
+     * 转换pageable为page
+     *
+     * @param pageable
+     * @param <T>
+     * @return
+     */
+    /**
+     * 体对象转 optional vo
+     *
+     * @param entity
+     * @param vClass
+     * @param <V>
+     * @return
+     */
+    public static <V> Optional<V> toOpVo(Object entity, Class<V> vClass) {
+        V value = toBean(entity, vClass);
+        if (value == null) {
+            return Optional.empty();
+        }
+        return Optional.of(value);
+    }
+
+    /**
+     * 将一个对象转换为另一个类的对象
+     *
+     * @param object
+     * @param tClass
+     * @param <T>
+     * @return
+     */
+    public static <T> T toBean(Object object, Class<T> tClass) {
+        if (object == null) {
+            return null;
+        }
+        return JSON.parseObject(toJsonString(object), tClass);
+    }
+
+    /**
+     * 将json转换为list
+     *
+     * @param jsonStr
+     * @param tClass
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> toList(String jsonStr, Class<T> tClass) {
+        if (jsonStr == null) {
+            return null;
+        }
+        return JSONArray.parseArray(jsonStr, tClass);
+    }
+
+    /**
+     * 将普通bean转为map
+     *
+     * @param bean
+     * @return
+     */
+    public static Map<String, Object> toMap(Object bean) {
+        return toMap(bean, false);
+    }
+
+    /**
+     * 将普通bean转为map
+     *
+     * @param bean
+     * @param withNull 是否包含值为null的字段
+     * @return
+     */
+    public static Map<String, Object> toMap(Object bean, boolean withNull) {
+        if (bean == null) {
+            return new HashMap<>();
+        }
+        JSONObject jsonObject = null;
+        if (withNull) {
+            jsonObject = JSON.parseObject(toJsonString(bean, SerializerFeature.WriteMapNullValue));
+        } else {
+            jsonObject = JSON.parseObject(toJsonString(bean));
+        }
+        return jsonObject.getInnerMap();
+    }
+
+    /**
+     * 转换option对象
+     *
+     * @param object
+     * @param tClass
+     * @param <T>
+     * @return
+     */
+    public static <T> T convertOptionObject(Object object, Class<T> tClass) {
+        if (object != null && object instanceof Optional) {
+            if (((Optional<?>) object).isPresent()) {
+                return JSON.parseObject(toJsonString(((Optional<?>) object).get()), tClass);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 通用转换
+     *
+     * @param pojoList
+     * @param tClass
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> toList(List<?> pojoList, Class<T> tClass) {
+        return JSONArray.parseArray(toJsonString(pojoList), tClass);
+    }
+
+    /**
+     * copy非空值属性，对于string是非空，对于其他类型是null
+     *
+     * @param source
+     * @param target
+     */
+    public static void copyNotEmptyProperties(Object source, Object target) {
+        source = setBlankStringFieldToNull(source);
+        BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+    }
+
+    /**
+     * copy非null值属性
+     *
+     * @param source
+     * @param target
+     */
+    public static void copyNotNullProperties(Object source, Object target) {
+        BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+    }
+
+
+    /**
+     * copy名称和类型相同的属性
+     *
+     * @param source
+     * @param target
+     */
+    public static void copyProperties(Object source, Object target) {
+        BeanUtil.copyProperties(source, target, CopyOptions.create().setIgnoreError(true));
+    }
+
+    public static String objToString(Object value) {
+        if (value == null) {
+            return null;
+        }
+        String str;
+        if (value instanceof String) {
+            str = (String) value;
+        } else if (value instanceof Number || value instanceof Boolean) {
+            str = String.valueOf(value);
+        } else if (value instanceof Date) {
+            str = getSimpleDateFormat().format((Date) value);
+        } else if (value instanceof LocalDateTime) {
+            str = ((LocalDateTime) value).format(dateTimeFormatter);
+        } else {
+            str = ConvertUtils.toJsonString(value);
+        }
+        return str;
+    }
+
+    public static <T> T strToObject(String str, Class<T> tClass) {
+        if (StringUtils.isBlank(str)) {
+            return null;
+        }
+        if (String.class.isAssignableFrom(tClass)) {
+            return (T) str;
+        } else if (Byte.class.isAssignableFrom(tClass)) {
+            return (T) Byte.valueOf(str);
+        } else if (Short.class.isAssignableFrom(tClass)) {
+            return (T) Short.valueOf(str);
+        } else if (Integer.class.isAssignableFrom(tClass)) {
+            return (T) Integer.valueOf(str);
+        } else if (Long.class.isAssignableFrom(tClass)) {
+            return (T) Long.valueOf(str);
+        } else if (Float.class.isAssignableFrom(tClass)) {
+            return (T) Float.valueOf(str);
+        } else if (Double.class.isAssignableFrom(tClass)) {
+            return (T) Double.valueOf(str);
+        } else if (Date.class.isAssignableFrom(tClass)) {
+            try {
+                return (T) getSimpleDateFormat().parse(str);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else if (LocalDateTime.class.isAssignableFrom(tClass)) {
+            return (T) LocalDateTime.parse(str, dateTimeFormatter);
+        } else {
+            return ConvertUtils.toBean(str, tClass);
+        }
+    }
+
+    /**
+     * 格式化json字符串
+     *
+     * @param jsonStr
+     * @return
+     */
+    public static String formatJsonStr(String jsonStr) {
+        return toJsonString(JSON.parseObject(jsonStr), true);
+    }
+
+    /**
+     * 将对象转换为json字符串
+     *
+     * @param object
+     * @return
+     */
+    public static String toJsonString(Object object) {
+        return toJsonString(object, false);
+    }
+
+    /**
+     * 将对象的String类型的字段设置为null，如果其值为空
+     *
+     * @param source
+     * @return
+     */
+    public static Object setBlankStringFieldToNull(Object source) {
+        Class<?> sourceClass = source.getClass();
+        PropertyFilter propertyFilter = (object, name, value) -> {
+            if (value == null) {
+                return false;
+            }
+            if (value instanceof String) {
+                if (StringUtils.isBlank((CharSequence) value)) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        return JSON.parseObject(JSON.toJSONString(source, propertyFilter), sourceClass);
+    }
+
+    /**
+     * 转换为json字符串
+     *
+     * @param object
+     * @param format 是否格式化
+     * @return
+     */
+    public static String toJsonString(Object object, boolean format) {
+        return toJsonString(object, true, format);
+    }
+
+    /**
+     * 转换为json字符串
+     *
+     * @param object
+     * @param disableCircularReference 是否开启循环引用
+     * @param formatOutput             是否格式化
+     * @return
+     */
+    public static String toJsonString(Object object, boolean disableCircularReference, boolean formatOutput) {
+        return toJsonString(object, disableCircularReference, formatOutput, false);
+    }
+
+    /**
+     * 转换为json字符串
+     *
+     * @param object
+     * @param disableCircularReference
+     * @param formatOutput
+     * @param dateFormat
+     * @return
+     */
+    public static String toJsonString(Object object, boolean disableCircularReference, boolean formatOutput, boolean dateFormat) {
+        List<SerializerFeature> serializerFeatureList = new ArrayList<>();
+        if (disableCircularReference) {
+            serializerFeatureList.add(SerializerFeature.DisableCircularReferenceDetect);
+        }
+        if (formatOutput) {
+            serializerFeatureList.add(SerializerFeature.PrettyFormat);
+        }
+        if (dateFormat) {
+            serializerFeatureList.add(SerializerFeature.WriteDateUseDateFormat);
+        }
+        if (serializerFeatureList.isEmpty()) {
+            return toJsonString(object);
+        } else {
+            return toJsonString(object, serializerFeatureList.toArray(new SerializerFeature[]{}));
+        }
+    }
+
+    /**
+     * 使用fastjson
+     *
+     * @param object
+     * @param serializerFeatures
+     * @return
+     */
+    private static String toJsonString(Object object, SerializerFeature... serializerFeatures) {
+        return JSON.toJSONString(object, serializerFeatures);
+    }
+
+    /**
+     * 请求转换为QueryWrapper
+     *
+     * @param req
+     * @param eClass
+     * @param <E>
+     * @return
+     */
+    public static <E> QueryWrapper<E> convertReqToQueryWrapper(Object req, Class<E> eClass) {
+        QueryWrapper<E> queryWrapper = new QueryWrapper<>();
+        List<Field> reqFields = ReflectionUtils.getAllFields(req);
+        List<Field> resultReqFields = new ArrayList<>();
+        if (eClass == null || req.getClass().equals(eClass)) {
+            resultReqFields = reqFields;
+        } else {
+            Map<String, Field> reqFieldMap = new HashMap<>();
+            for (Field reqField : reqFields) {
+                reqFieldMap.put(reqField.getName(), reqField);
+            }
+            List<Field> eClassFields = ReflectionUtils.getAllFields(eClass);
+
+            for (Field eClassField : eClassFields) {
+                Field reqField = reqFieldMap.get(eClassField.getName());
+                if (reqField != null) {
+                    resultReqFields.add(reqField);
+                }
+            }
+        }
+        for (Field resultReqField : resultReqFields) {
+            resultReqField.setAccessible(true);
+            String name = com.baomidou.mybatisplus.core.toolkit.StringUtils.camelToUnderline(resultReqField.getName());
+            try {
+                Object value = resultReqField.get(req);
+                if (value != null) {
+                    if (value instanceof String) {
+                        if (StringUtils.isNoneBlank((CharSequence) value)) {
+                            queryWrapper.like(name, value);
+                        }
+                    } else if (value instanceof Number || value instanceof Boolean) {
+                        queryWrapper.eq(name, value);
+                    } else if (value instanceof Collection) {
+                        if (!((Collection<?>) value).isEmpty()) {
+                            queryWrapper.in(name, (Collection) value);
+                        }
+                    }
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return queryWrapper;
+    }
+
+}
