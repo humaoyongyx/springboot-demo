@@ -3,10 +3,7 @@ package issac.study.mbp.core.http.okhttp;
 import issac.study.mbp.core.http.HttpClientService;
 import issac.study.mbp.core.http.HttpMethod;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import okhttp3.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -95,8 +92,10 @@ public class OkHttpClientServiceImpl extends OkHttpClientBaseImpl implements Htt
         requestBuilder.method(httpMethod.name(), requestBody);
         long begin = System.currentTimeMillis();
         Request request = requestBuilder.build();
-        try {
-            return okHttpClient.newCall(request).execute().body().string();
+        Call call = okHttpClient.newCall(request);
+        //参考okhttp3.ResponseBody,关闭
+        try (Response response = call.execute()) {
+            return response.body().string();
         } catch (IOException e) {
             log.error("okHttpClient execute error:", e);
         } finally {
